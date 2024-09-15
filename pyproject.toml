@@ -1,0 +1,45 @@
+[build-system]
+requires = ["setuptools >= 75.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "bearification"
+version = "0.0.1"
+authors = [
+  {name = "akshualy"}
+]
+description = "Warframe to Discord linking tool."
+readme = "README.md"
+requires-python = ">= 3.12"
+dependencies = [
+    "black==24.8.0",
+    "flake8==7.1.1",
+    "isort==5.13.2",
+    "pylint==3.2.7",
+    "selenium==4.24.0",
+    "discord.py==2.4.0",
+]
+
+[project.urls]
+Repository = "https://github.com/akshualy/Bearification.git"
+"Bug Tracker" = "https://github.com/akshualy/Bearification/issues"
+
+[tool.setuptools]
+py-modules = ["bearification"]
+
+[tool.black]
+line-length = 120
+
+[tool.isort]
+profile = "black"
+line_length = 120
+force_single_line = true
+force_sort_within_sections = true
+lexicographical = true
+single_line_exclusions = ["typing"]
+order_by_type = false
+group_by_package = true
+skip_glob = [ "venv/*" ]
+
+[tool.pytest.ini_options]
+addopts = "--pylint"
