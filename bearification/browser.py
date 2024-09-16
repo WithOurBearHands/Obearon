@@ -87,7 +87,12 @@ def start_browser() -> None:
     """
     Start a browser, log in and wait for messages. This is blocking.
     """
+    user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:130.0) Gecko/20100101 Firefox/130.0"
     firefox_options = Options()
+    firefox_options.add_argument(f"--user-agent={user_agent}")
+    firefox_options.add_argument("--window-size=1920,1080")
+    firefox_options.add_argument('--no-sandbox')
+    firefox_options.add_argument("--disable-extensions")
     # firefox_options.add_argument("--headless=new")
     firefox = webdriver.Firefox(options=firefox_options)
     try:
