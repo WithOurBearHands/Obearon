@@ -5,8 +5,10 @@ from time import sleep
 from selenium import webdriver
 from selenium.common import NoSuchElementException
 from selenium.webdriver.common.by import By
-from selenium.webdriver.firefox.options import Options
-from selenium.webdriver.firefox.webdriver import WebDriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.webdriver import WebDriver
+from selenium.webdriver.support import expected_conditions
+from selenium.webdriver.support.wait import WebDriverWait
 
 
 def log_in(browser: WebDriver) -> None:
@@ -61,7 +63,11 @@ def wait_for_messages(browser: WebDriver) -> None:
 
         subject = message.text
         message.click()
-        sleep(2)
+
+        username_present = expected_conditions.presence_of_element_located(
+            (By.CSS_SELECTOR, "strong.ipsType_normal")
+        )
+        WebDriverWait(browser, 10).until(username_present)
 
         username = browser.find_element(By.CSS_SELECTOR, "strong.ipsType_normal").text.replace("\n", "")
         newest_comment = browser.find_elements(By.CSS_SELECTOR, 'div[data-role="commentContent"]')[0]
@@ -76,28 +82,34 @@ def wait_for_messages(browser: WebDriver) -> None:
         conversation_actions = browser.find_element(By.ID, "elConvoActions_menu")
         delete_action = conversation_actions.find_elements(By.TAG_NAME, "a")[1]
         delete_action.click()
-        sleep(1)
+
+        ok_button_present = expected_conditions.presence_of_element_located(
+            (By.CSS_SELECTOR, 'button[data-action="ok"]')
+        )
+        WebDriverWait(browser, 1).until(ok_button_present)
 
         delete_confirm = browser.find_element(By.CSS_SELECTOR, 'button[data-action="ok"]')
         delete_confirm.click()
-        sleep(5)
+        sleep(1)
 
 
 def start_browser() -> None:
     """
     Start a browser, log in and wait for messages. This is blocking.
     """
-    user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:130.0) Gecko/20100101 Firefox/130.0"
-    firefox_options = Options()
-    firefox_options.add_argument(f"--user-agent={user_agent}")
-    firefox_options.add_argument("--window-size=1920,1080")
-    firefox_options.add_argument('--no-sandbox')
-    firefox_options.add_argument("--disable-extensions")
-    # firefox_options.add_argument("--headless=new")
-    firefox = webdriver.Firefox(options=firefox_options)
+    user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36"
+    chrome_options = Options()
+    chrome_options.add_argument(f"--user-agent={user_agent}")
+    chrome_options.add_argument("--window-size=1920,1080")
+    chrome_options.add_argument('--no-sandbox')
+    chrome_options.add_argument("--disable-extensions")
+    chrome_options.add_argument("--headless=new")
+    chrome = webdriver.Chrome(options=chrome_options)
     try:
-        log_in(firefox)
-        wait_for_messages(firefox)
+        log_in(chrome)
+        wait_for_messages(chrome)
+    except KeyboardInterrupt:
+        pass
     except Exception as e:
         print(e)
-    firefox.close()
+    chrome.close()
