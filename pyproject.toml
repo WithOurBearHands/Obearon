@@ -17,7 +17,7 @@ dependencies = [
     "isort==5.13.2",
     "pylint==3.2.7",
     "selenium==4.24.0",
-    "discord.py==2.4.0",
+    "py-cord==2.6.1",
     "python-dotenv==1.0.1",
 ]
 
