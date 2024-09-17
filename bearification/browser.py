@@ -1,12 +1,16 @@
+"""
+Bearification's browser related module.
+"""
+
 import os
 import random
 from time import sleep
 
 from selenium import webdriver
 from selenium.common import NoSuchElementException
-from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.webdriver import WebDriver
+from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.wait import WebDriverWait
 
@@ -64,9 +68,7 @@ def wait_for_messages(browser: WebDriver) -> None:
         subject = message.text
         message.click()
 
-        username_present = expected_conditions.presence_of_element_located(
-            (By.CSS_SELECTOR, "strong.ipsType_normal")
-        )
+        username_present = expected_conditions.presence_of_element_located((By.CSS_SELECTOR, "strong.ipsType_normal"))
         WebDriverWait(browser, 10).until(username_present)
 
         username = browser.find_element(By.CSS_SELECTOR, "strong.ipsType_normal").text.replace("\n", "")
@@ -97,11 +99,18 @@ def start_browser() -> None:
     """
     Start a browser, log in and wait for messages. This is blocking.
     """
-    user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36"
+    user_agent = (
+        "Mozilla/5.0 "
+        "(Windows NT 10.0; Win64; x64) "
+        "AppleWebKit/537.36 "
+        "(KHTML, like Gecko) "
+        "Chrome/128.0.0.0 "
+        "Safari/537.36"
+    )
     chrome_options = Options()
     chrome_options.add_argument(f"--user-agent={user_agent}")
     chrome_options.add_argument("--window-size=1920,1080")
-    chrome_options.add_argument('--no-sandbox')
+    chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-extensions")
     chrome_options.add_argument("--headless=new")
     chrome = webdriver.Chrome(options=chrome_options)
@@ -110,6 +119,6 @@ def start_browser() -> None:
         wait_for_messages(chrome)
     except KeyboardInterrupt:
         pass
-    except Exception as e:
+    except Exception as e:  # pylint: disable=broad-exception-caught
         print(e)
     chrome.close()

@@ -6,6 +6,9 @@ A Discord bot to verify and link Discord accounts to Warframe accounts.
 - [Python 3.12](https://www.python.org/downloads/)
 
 ## Setup
+
+Make sure you only install after being in a virtual environment.
+
 ```commandline
 pip install .
 ```
@@ -24,6 +27,19 @@ Copy [the example env file](.env.example) into a file called `.env` and fill in 
 
 ## Running
 
+To run this application simply execute
+
 ```commandline
 python main.py
+```
+
+## Linting
+
+There are several automatic code formatting tools available.
+
+```commandline
+black .
+isort .
+flake8
+pylint main.py bearification
 ```

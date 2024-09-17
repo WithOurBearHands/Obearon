@@ -1,0 +1,5 @@
+[MISCELLANEOUS]
+notes=FIXME
+
+[tool.pylint.code_style]
+max-line-length = 120

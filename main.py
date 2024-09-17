@@ -1,3 +1,7 @@
+"""
+The main file to control Bearification.
+"""
+
 from multiprocessing import Process
 
 from dotenv import load_dotenv
@@ -20,5 +24,5 @@ if __name__ == "__main__":
         discord_thread.join()
     except KeyboardInterrupt:
         print("Exiting.")
-    except Exception as e:
+    except Exception as e:  # pylint: disable=broad-exception-caught
         print(e)
