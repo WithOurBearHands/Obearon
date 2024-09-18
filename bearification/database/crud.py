@@ -1,9 +1,12 @@
 """
 Create, Read, Update and Delete operations in the database.
 """
-from sqlalchemy import select, update
 
-from bearification.database import engine, models
+from sqlalchemy import select
+from sqlalchemy import update
+
+from bearification.database import engine
+from bearification.database import models
 
 
 async def create_user(discord_guild_id: int, discord_user_id: int, verification_code: int) -> None:
@@ -44,10 +47,8 @@ async def update_warframe_name(verification_code: int, warframe_name: str) -> No
     """
     async with engine.async_session() as session, session.begin():
         user_query = await session.execute(
-            select(models.User)
-            .where(
-                models.User.verification_code == verification_code,
-                models.User.verified.is_(False)
+            select(models.User).where(
+                models.User.verification_code == verification_code, models.User.verified.is_(False)
             )
         )
         user = user_query.scalars().first()
@@ -85,3 +86,42 @@ async def update_user_as_linked(discord_user_id: int) -> None:
         await session.execute(
             update(models.User).where(models.User.discord_user_id == discord_user_id).values({"linked": True})
         )
+
+
+async def set_verify_role(discord_guild_id: int, discord_role_id: int) -> None:
+    """
+    Stores the verification role to be given.
+
+    Args:
+        discord_guild_id: The guild ID in which to give the role.
+        discord_role_id: The ID of the role to be given.
+    """
+    async with engine.async_session() as session, session.begin():
+        role_query = await session.execute(
+            select(models.GuildRole).where(models.GuildRole.discord_guild_id == discord_guild_id)
+        )
+        role = role_query.scalars().first()
+        if role is not None:
+            role.discord_role_id = discord_role_id
+            print(f"Updated {discord_guild_id} with new role ID {discord_role_id}.")
+            return
+
+        session.add(models.GuildRole(discord_guild_id=discord_guild_id, discord_role_id=discord_role_id))
+        print(f"Set Discord role ID {discord_role_id} for guild ID {discord_guild_id}.")
+
+
+async def get_verify_role(discord_guild_id: int) -> models.GuildRole | None:
+    """
+    Get the verify role ID or none if none is set.
+
+    Args:
+        discord_guild_id: The Discord guild ID to search for.
+
+    Returns:
+        A GuildRole instance or None if no information exists.
+    """
+    async with engine.async_session() as session, session.begin():
+        role_query = await session.execute(
+            select(models.GuildRole).where(models.GuildRole.discord_guild_id == discord_guild_id)
+        )
+        return role_query.scalars().first()

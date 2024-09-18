@@ -1,16 +1,18 @@
 """
 The main file to control Bearification.
 """
+
 import asyncio
 from multiprocessing import Process
 
 from dotenv import load_dotenv
+
+# This must be loaded before engine import
 load_dotenv()
 
-from bearification.database import engine
 from bearification.browser import start_browser
+from bearification.database import engine
 from bearification.discord_bot import start_discord_bot
-
 
 if __name__ == "__main__":
     asyncio.run(engine.create_tables())

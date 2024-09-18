@@ -31,13 +31,17 @@ async def check_for_verified_users() -> None:
     """
     for user in await crud.get_verified_users():
         guild = client.get_guild(user.discord_guild_id)
+        verified_role = await crud.get_verify_role(user.discord_guild_id)
         member = await guild.fetch_member(user.discord_user_id)
         try:
             await member.edit(nick=user.warframe_name)
             print(f"Updated username of {user.discord_user_id} to {user.warframe_name}")
+            if verified_role:
+                await member.add_roles(guild.get_role(verified_role.discord_role_id))
+                print(f"Updated roles of {user.discord_user_id} with {verified_role.discord_role_id}")
             await crud.update_user_as_linked(discord_user_id=user.discord_user_id)
         except Forbidden:
-            print(f"Could not change username of {user.discord_user_id} in {user.discord_guild_id}")
+            print(f"Could not change username or roles of {user.discord_user_id} in {user.discord_guild_id}")
 
 
 class VerifyView(discord.ui.View):
@@ -76,6 +80,25 @@ class VerifyView(discord.ui.View):
             ),
             ephemeral=True,
         )
+
+
+@client.application_command(
+    name="set_verify_role",
+    description="Set the role to give upon successful verification.",
+    contexts={discord.InteractionContextType.guild},
+    default_member_permissions=discord.Permissions(manage_roles=True),
+)
+@discord.option("role", type=discord.SlashCommandOptionType.role)
+async def set_verify_role(interaction: discord.Interaction, role: discord.Role) -> None:
+    """
+    Sets the verify role to be given upon successful verification.
+
+    Args:
+        interaction: The interaction of the user who executed this command.
+        role: The role to store.
+    """
+    await crud.set_verify_role(discord_guild_id=interaction.guild_id, discord_role_id=role.id)
+    await interaction.respond(content=f"**{role.name}** has been set as the verified role.", ephemeral=True)
 
 
 @client.message_command(

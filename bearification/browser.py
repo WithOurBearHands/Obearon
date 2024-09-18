@@ -1,6 +1,7 @@
 """
 Bearification's browser related module.
 """
+
 import asyncio
 import os
 import random
@@ -10,8 +11,6 @@ from selenium.common import NoSuchElementException
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions
-from selenium.webdriver.support.wait import WebDriverWait
 
 from bearification.database import crud
 
@@ -68,9 +67,7 @@ async def wait_for_messages(browser: WebDriver) -> None:
 
         subject = message.text.strip()
         message.click()
-
-        username_present = expected_conditions.presence_of_element_located((By.CSS_SELECTOR, "strong.ipsType_normal"))
-        WebDriverWait(browser, 10).until(username_present)
+        await asyncio.sleep(2)
 
         username = browser.find_element(By.CSS_SELECTOR, "strong.ipsType_normal").text.replace("\n", "")
         newest_comment = browser.find_elements(By.CSS_SELECTOR, 'div[data-role="commentContent"]')[0]
@@ -90,11 +87,7 @@ async def wait_for_messages(browser: WebDriver) -> None:
         conversation_actions = browser.find_element(By.ID, "elConvoActions_menu")
         delete_action = conversation_actions.find_elements(By.TAG_NAME, "a")[1]
         delete_action.click()
-
-        ok_button_present = expected_conditions.presence_of_element_located(
-            (By.CSS_SELECTOR, 'button[data-action="ok"]')
-        )
-        WebDriverWait(browser, 2).until(ok_button_present)
+        await asyncio.sleep(2)
 
         delete_confirm = browser.find_element(By.CSS_SELECTOR, 'button[data-action="ok"]')
         delete_confirm.click()
