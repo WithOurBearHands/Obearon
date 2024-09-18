@@ -85,7 +85,7 @@ async def wait_for_messages(browser: WebDriver) -> None:
 
         conversation_options = browser.find_element(By.ID, "elConvoActions")
         conversation_options.click()
-        await asyncio.sleep(0.25)
+        await asyncio.sleep(0.5)
 
         conversation_actions = browser.find_element(By.ID, "elConvoActions_menu")
         delete_action = conversation_actions.find_elements(By.TAG_NAME, "a")[1]
@@ -94,7 +94,7 @@ async def wait_for_messages(browser: WebDriver) -> None:
         ok_button_present = expected_conditions.presence_of_element_located(
             (By.CSS_SELECTOR, 'button[data-action="ok"]')
         )
-        WebDriverWait(browser, 1).until(ok_button_present)
+        WebDriverWait(browser, 2).until(ok_button_present)
 
         delete_confirm = browser.find_element(By.CSS_SELECTOR, 'button[data-action="ok"]')
         delete_confirm.click()
