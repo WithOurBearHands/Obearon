@@ -1,10 +1,9 @@
 """
 Bearification's browser related module.
 """
-
+import asyncio
 import os
 import random
-from time import sleep
 
 from selenium import webdriver
 from selenium.common import NoSuchElementException
@@ -13,6 +12,8 @@ from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.wait import WebDriverWait
+
+from bearification.database import crud
 
 
 def log_in(browser: WebDriver) -> None:
@@ -48,7 +49,7 @@ def log_in(browser: WebDriver) -> None:
     browser.get("https://forums.warframe.com/")
 
 
-def wait_for_messages(browser: WebDriver) -> None:
+async def wait_for_messages(browser: WebDriver) -> None:
     """
     Wait for messages. Upon receiving a message, the contents are logged and the message is deleted.
 
@@ -62,10 +63,10 @@ def wait_for_messages(browser: WebDriver) -> None:
         except NoSuchElementException:
             time_until_refresh = random.randint(90, 150)
             print(f"No messages. Trying again in {time_until_refresh}s.")
-            sleep(time_until_refresh)
+            await asyncio.sleep(time_until_refresh)
             continue
 
-        subject = message.text
+        subject = message.text.strip()
         message.click()
 
         username_present = expected_conditions.presence_of_element_located((By.CSS_SELECTOR, "strong.ipsType_normal"))
@@ -75,11 +76,16 @@ def wait_for_messages(browser: WebDriver) -> None:
         newest_comment = browser.find_elements(By.CSS_SELECTOR, 'div[data-role="commentContent"]')[0]
         message = newest_comment.find_element(By.TAG_NAME, "p").text
 
-        print(f"Message from {username} with subject {subject} and message {message}")
+        print(f"Message from '{username}' with subject '{subject}' and message '{message}'")
+        try:
+            verification_code = int(subject)
+            await crud.update_warframe_name(verification_code=verification_code, warframe_name=username)
+        except ValueError:
+            print(f"'{subject}' is not an integer.")
 
         conversation_options = browser.find_element(By.ID, "elConvoActions")
         conversation_options.click()
-        sleep(0.25)
+        await asyncio.sleep(0.25)
 
         conversation_actions = browser.find_element(By.ID, "elConvoActions_menu")
         delete_action = conversation_actions.find_elements(By.TAG_NAME, "a")[1]
@@ -92,7 +98,7 @@ def wait_for_messages(browser: WebDriver) -> None:
 
         delete_confirm = browser.find_element(By.CSS_SELECTOR, 'button[data-action="ok"]')
         delete_confirm.click()
-        sleep(1)
+        await asyncio.sleep(1)
 
 
 def start_browser() -> None:
@@ -116,7 +122,7 @@ def start_browser() -> None:
     chrome = webdriver.Chrome(options=chrome_options)
     try:
         log_in(chrome)
-        wait_for_messages(chrome)
+        asyncio.run(wait_for_messages(chrome))
     except KeyboardInterrupt:
         pass
     except Exception as e:  # pylint: disable=broad-exception-caught

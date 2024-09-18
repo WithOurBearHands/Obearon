@@ -7,13 +7,13 @@ from multiprocessing import Process
 from dotenv import load_dotenv
 load_dotenv()
 
-from bearification import database
+from bearification.database import engine
 from bearification.browser import start_browser
 from bearification.discord_bot import start_discord_bot
 
 
 if __name__ == "__main__":
-    asyncio.run(database.create_database())
+    asyncio.run(engine.create_tables())
 
     browser_thread = Process(target=start_browser)
     discord_thread = Process(target=start_discord_bot)

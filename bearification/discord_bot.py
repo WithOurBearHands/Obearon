@@ -6,7 +6,10 @@ import os
 import random
 
 import discord
+from discord import Forbidden
 from discord.ext import tasks
+
+from bearification.database import crud
 
 client = discord.Bot()
 
@@ -26,7 +29,15 @@ async def check_for_verified_users() -> None:
     """
     Periodically check for new verified users and assign nicknames/roles.
     """
-    print("loop step")
+    for user in await crud.get_verified_users():
+        guild = client.get_guild(user.discord_guild_id)
+        member = await guild.fetch_member(user.discord_user_id)
+        try:
+            await member.edit(nick=user.warframe_name)
+            print(f"Updated username of {user.discord_user_id} to {user.warframe_name}")
+            await crud.update_user_as_linked(discord_user_id=user.discord_user_id)
+        except Forbidden:
+            print(f"Could not change username of {user.discord_user_id} in {user.discord_guild_id}")
 
 
 class VerifyView(discord.ui.View):
@@ -50,11 +61,17 @@ class VerifyView(discord.ui.View):
           _: Required button argument.
           interaction: The interaction of the user.
         """
-        user_code = random.randint(100_000, 999_999)
+        verification_code = random.randint(100_000, 999_999)
+        await crud.create_user(
+            discord_guild_id=interaction.guild_id,
+            discord_user_id=interaction.user.id,
+            verification_code=verification_code,
+        )
+
         await interaction.response.send_message(
             content=(
                 f"1. Go to <{os.environ["CREATE_MESSAGE_LINK"]}>.\n"
-                f"2. Enter `{user_code}` in the **subject** or **message**.\n"
+                f"2. Enter `{verification_code}` in the **subject** or **message**.\n"
                 "3. Send the message and **wait up to 2 minutes**[.](https://i.imgur.com/caLFbWY.png)"
             ),
             ephemeral=True,
