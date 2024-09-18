@@ -19,6 +19,8 @@ dependencies = [
     "selenium==4.24.0",
     "py-cord==2.6.1",
     "python-dotenv==1.0.1",
+    "SQLAlchemy==2.0.35",
+    "asyncpg==0.29.0",
 ]
 
 [project.urls]
