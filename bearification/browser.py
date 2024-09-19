@@ -8,9 +8,9 @@ import random
 
 from selenium import webdriver
 from selenium.common import NoSuchElementException
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.firefox.options import Options
+from selenium.webdriver.firefox.webdriver import WebDriver
 
 from bearification.database import crud
 
@@ -106,13 +106,12 @@ def start_browser() -> None:
         "Chrome/128.0.0.0 "
         "Safari/537.36"
     )
-    chrome_options = Options()
-    chrome_options.add_argument(f"--user-agent={user_agent}")
-    chrome_options.add_argument("--window-size=1920,1080")
-    chrome_options.add_argument("--no-sandbox")
-    chrome_options.add_argument("--disable-extensions")
-    chrome_options.add_argument("--headless=new")
-    chrome = webdriver.Chrome(options=chrome_options)
+    firefox_options = Options()
+    firefox_options.set_preference("general.useragent.override", user_agent)
+    firefox_options.add_argument("--width=1920")
+    firefox_options.add_argument("--height=1080")
+    firefox_options.add_argument("--headless")
+    chrome = webdriver.Firefox(options=firefox_options)
     try:
         log_in(chrome)
         asyncio.run(wait_for_messages(chrome))
