@@ -16,3 +16,4 @@ dist/
 
 # Project specific files
 *.env
+data/

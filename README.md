@@ -24,7 +24,6 @@ Copy [the example env file](.env.example) into a file called `.env` and fill in 
 | COOKIE_IPS4_DEVICE_KEY | Cookie called "ips4_device_key", same as above                |
 | CREATE_MESSAGE_LINK | Link that should be sent to create a message in the forum     |
 | DISCORD_TOKEN | The Discord token for the Discord bot                         |
-| POSTGRES_URL | An asyncpg postgres database connection string                |
 
 ## Running
 
