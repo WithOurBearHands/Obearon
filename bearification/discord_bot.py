@@ -105,6 +105,26 @@ async def set_verify_role(interaction: discord.Interaction, role: discord.Role) 
     await interaction.respond(content=f"**{role.name}** has been set as the verified role.", ephemeral=True)
 
 
+@client.application_command(
+    name="get_verify_role",
+    description="View the role to give upon successful verification.",
+    contexts={discord.InteractionContextType.guild},
+    default_member_permissions=discord.Permissions(manage_roles=True),
+)
+async def get_verify_role(interaction: discord.Interaction) -> None:
+    """
+    Gets the verify role to be given upon successful verification.
+
+    Args:
+        interaction: The interaction of the user who executed this command.
+    """
+    role = await crud.get_verify_role(discord_guild_id=interaction.guild_id)
+    await interaction.respond(
+        content=(f"<@&{role.discord_role_id}>" if role else "No role") + " has been set as the verified role.",
+        ephemeral=True,
+    )
+
+
 @client.message_command(
     name="Create verify message",
     contexts={discord.InteractionContextType.guild},
