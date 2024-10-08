@@ -33,6 +33,23 @@ To run this application simply execute
 python main.py
 ```
 
+### Running from Docker
+
+Build the docker image with:
+```commandline
+docker build -t bearification:latest .
+```
+
+If you haven't run the docker image before, make sure the data folder exists:
+```commandline
+mkdir data
+```
+
+Run the docker image with:
+```commandline
+docker run -v data bearification:latest
+```
+
 ## Linting
 
 There are several automatic code formatting tools available.
