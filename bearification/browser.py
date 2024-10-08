@@ -32,6 +32,7 @@ class Browser:
         firefox_options.add_argument("--width=1920")
         firefox_options.add_argument("--height=1080")
         firefox_options.add_argument("--headless")
+        firefox_options.add_argument("--no-sandbox")
         self.browser = webdriver.Firefox(options=firefox_options)
 
     def close(self):
