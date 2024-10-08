@@ -2,7 +2,7 @@
 notes=FIXME
 
 [MESSAGES CONTROL]
-disable=C0413,R0903
+disable=R0903
 
 [tool.pylint.code_style]
 max-line-length = 120

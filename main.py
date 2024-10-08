@@ -3,30 +3,20 @@ The main file to control Bearification.
 """
 
 import asyncio
-from multiprocessing import Process
 
-from dotenv import load_dotenv
-
-# This must be loaded before engine import
-load_dotenv()
-
-from bearification.browser import start_browser
 from bearification.database import engine
+from bearification.discord_bot import close
 from bearification.discord_bot import start_discord_bot
 
 if __name__ == "__main__":
-    asyncio.run(engine.create_tables())
-
-    browser_thread = Process(target=start_browser)
-    discord_thread = Process(target=start_discord_bot)
-
-    browser_thread.start()
-    discord_thread.start()
-
+    event_loop = asyncio.get_event_loop_policy().new_event_loop()
     try:
-        browser_thread.join()
-        discord_thread.join()
+        event_loop.run_until_complete(engine.create_tables())
+        event_loop.run_until_complete(start_discord_bot())
     except KeyboardInterrupt:
         print("Exiting.")
     except Exception as e:  # pylint: disable=broad-exception-caught
         print(e)
+    finally:
+        event_loop.close()
+        close()

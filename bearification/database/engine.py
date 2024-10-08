@@ -4,12 +4,15 @@ Database engine related module.
 
 import os
 
+from dotenv import load_dotenv
 from sqlalchemy.ext.asyncio import async_sessionmaker
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.ext.asyncio import create_async_engine
 
 from bearification.database.models import GuildRole
 from bearification.database.models import User
+
+load_dotenv()
 
 async_engine = create_async_engine(
     os.environ["POSTGRES_URL"],

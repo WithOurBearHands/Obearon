@@ -9,9 +9,11 @@ import discord
 from discord import Forbidden
 from discord.ext import tasks
 
+from bearification.browser import Browser
 from bearification.database import crud
 
 client = discord.Bot()
+browser = Browser()
 
 
 @client.event
@@ -24,11 +26,13 @@ async def on_ready() -> None:
     print(f"{client.user} is ready.")
 
 
-@tasks.loop(seconds=10)
+@tasks.loop(seconds=120)
 async def check_for_verified_users() -> None:
     """
-    Periodically check for new verified users and assign nicknames/roles.
+    Check for new verified users and assign nicknames/roles.
     """
+    await browser.check_messages()
+
     for user in await crud.get_verified_users():
         guild = client.get_guild(user.discord_guild_id)
         verified_role = await crud.get_verify_role(user.discord_guild_id)
@@ -125,8 +129,16 @@ async def create_verify_message(interaction: discord.Interaction, message: disco
     await interaction.response.send_message("Created the verify message.", ephemeral=True)
 
 
-def start_discord_bot():
+async def start_discord_bot() -> None:
     """
     Start the Discord bot.
     """
-    client.run(os.environ["DISCORD_TOKEN"])
+    browser.login()
+    await client.start(os.environ["DISCORD_TOKEN"])
+
+
+def close() -> None:
+    """
+    Close anything that needs to be closed.
+    """
+    browser.close()
