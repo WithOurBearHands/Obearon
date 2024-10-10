@@ -1,7 +1,7 @@
 FROM selenium/standalone-firefox
 FROM python:3.12-slim
 
-RUN apt-get update && apt-get install firefox-esr -y
+RUN apt-get update && apt-get install firefox-esr wget -y
 
 RUN /bin/bash -c 'set -ex && \
     ARCH=`uname -m` && \
