@@ -12,7 +12,7 @@ RUN /bin/bash -c 'set -ex && \
         rm -rf geckodriver-v0.35.0-linux-aarch64.tar.gz; \
     fi'
 
-COPY main.py pyproject.toml .env /
+COPY main.py pyproject.toml /
 COPY /bearification /bearification
 RUN pip install .
 
