@@ -33,6 +33,12 @@ class Browser:
         firefox_options.add_argument("--height=1080")
         firefox_options.add_argument("--headless")
         firefox_options.add_argument("--no-sandbox")
+
+        if os.path.exists("/usr/local/bin/geckodriver"):
+            service = webdriver.FirefoxService(executable_path='/usr/local/bin/geckodriver')
+            self.browser = webdriver.Firefox(options=firefox_options, service=service)
+            return
+
         self.browser = webdriver.Firefox(options=firefox_options)
 
     def close(self):
