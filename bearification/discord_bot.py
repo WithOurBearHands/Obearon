@@ -139,7 +139,7 @@ async def create_verify_message(interaction: discord.Interaction, message: disco
         message: The message that was right-clicked.
     """
     embed = discord.Embed(
-        title="Rules",
+        title="🐝 Bee welcomed to our beary 🐻 gnarly Discord! ✨ <:goopolla:1288497392806527117>",
         description=message.content,
         color=0xDD05ED,
         thumbnail=interaction.guild.icon.url,
