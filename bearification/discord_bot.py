@@ -80,7 +80,8 @@ class VerifyView(discord.ui.View):
             content=(
                 f"1. Go to <{os.environ["CREATE_MESSAGE_LINK"]}>.\n"
                 f"2. Enter `{verification_code}` in the **subject** or **message**.\n"
-                "3. Send the message and **wait up to 2 minutes**[.](https://i.imgur.com/caLFbWY.png)"
+                "3. Send the message and **wait up to 2 minutes**[.](https://i.imgur.com/caLFbWY.png)\n\n"
+                "If you have any issues, send a message in <#1279139946480926872> or to <@1268317208409538632>!"
             ),
             ephemeral=True,
         )
