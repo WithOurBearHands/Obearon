@@ -1,7 +1,7 @@
 """
 Create, Read, Update and Delete operations in the database.
 """
-
+from loguru import logger
 from sqlalchemy import select
 from sqlalchemy import update
 
@@ -22,11 +22,11 @@ async def create_user(discord_guild_id: int, discord_user_id: int, verification_
         user_query = await session.execute(select(models.User).where(models.User.discord_user_id == discord_user_id))
         user = user_query.scalars().first()
         if user is not None:
+            logger.info(f"Updating {user.warframe_name}/{discord_user_id} with new verification code.")
             user.warframe_name = None
             user.verified = False
             user.linked = False
             user.verification_code = verification_code
-            print(f"Updated {user.warframe_name} with new verification code.")
             return
 
         session.add(
@@ -34,7 +34,7 @@ async def create_user(discord_guild_id: int, discord_user_id: int, verification_
                 discord_guild_id=discord_guild_id, discord_user_id=discord_user_id, verification_code=verification_code
             )
         )
-        print(f"Added Discord ID {discord_user_id} with verification code {verification_code}.")
+        logger.info(f"Added Discord ID {discord_user_id} with verification code {verification_code}.")
 
 
 async def update_warframe_name(verification_code: int, warframe_name: str) -> None:
@@ -53,12 +53,12 @@ async def update_warframe_name(verification_code: int, warframe_name: str) -> No
         )
         user = user_query.scalars().first()
         if user is None:
-            print(f"{warframe_name} entered an invalid verification code ({verification_code}).")
+            logger.info(f"{warframe_name} entered an invalid verification code ({verification_code}).")
             return
 
         user.warframe_name = warframe_name
         user.verified = True
-        print(f"{warframe_name} ({user.discord_user_id}) has been marked as verified.")
+        logger.info(f"{warframe_name} ({user.discord_user_id}) has been marked as verified.")
 
 
 async def get_verified_users() -> list[models.User]:
@@ -103,11 +103,11 @@ async def set_verify_role(discord_guild_id: int, discord_role_id: int) -> None:
         role = role_query.scalars().first()
         if role is not None:
             role.discord_role_id = discord_role_id
-            print(f"Updated {discord_guild_id} with new role ID {discord_role_id}.")
+            logger.info(f"Updated {discord_guild_id} with new role ID {discord_role_id}.")
             return
 
         session.add(models.GuildRole(discord_guild_id=discord_guild_id, discord_role_id=discord_role_id))
-        print(f"Set Discord role ID {discord_role_id} for guild ID {discord_guild_id}.")
+        logger.info(f"Set Discord role ID {discord_role_id} for guild ID {discord_guild_id}.")
 
 
 async def get_verify_role(discord_guild_id: int) -> models.GuildRole | None:

@@ -8,6 +8,7 @@ import random
 import discord
 from discord import Forbidden
 from discord.ext import tasks
+from loguru import logger
 
 from bearification.browser import Browser
 from bearification.database import crud
@@ -23,7 +24,7 @@ async def on_ready() -> None:
     """
     client.add_view(VerifyView())
     check_for_verified_users.start()
-    print(f"{client.user} is ready.")
+    logger.info(f"{client.user} is ready.")
 
 
 @tasks.loop(seconds=120)
@@ -39,13 +40,13 @@ async def check_for_verified_users() -> None:
         member = await guild.fetch_member(user.discord_user_id)
         try:
             await member.edit(nick=user.warframe_name)
-            print(f"Updated username of {user.discord_user_id} to {user.warframe_name}")
+            logger.info(f"Updated username of {user.discord_user_id} to {user.warframe_name}")
             if verified_role:
                 await member.add_roles(guild.get_role(verified_role.discord_role_id))
-                print(f"Updated roles of {user.discord_user_id} with {verified_role.discord_role_id}")
+                logger.info(f"Updated roles of {user.discord_user_id} with {verified_role.discord_role_id}")
             await crud.update_user_as_linked(discord_user_id=user.discord_user_id)
         except Forbidden:
-            print(f"Could not change username or roles of {user.discord_user_id} in {user.discord_guild_id}")
+            logger.info(f"Could not change username or roles of {user.discord_user_id} in {user.discord_guild_id}")
 
 
 class VerifyView(discord.ui.View):

@@ -5,6 +5,7 @@ Bearification's browser related module.
 import asyncio
 import os
 
+from loguru import logger
 from selenium import webdriver
 from selenium.common import NoSuchElementException
 from selenium.webdriver.common.by import By
@@ -31,7 +32,7 @@ class Browser:
         firefox_options.set_preference("general.useragent.override", user_agent)
         firefox_options.add_argument("--width=1920")
         firefox_options.add_argument("--height=1080")
-        firefox_options.add_argument("--headless")
+        # firefox_options.add_argument("--headless")
         firefox_options.add_argument("--no-sandbox")
 
         if os.path.exists("/usr/local/bin/geckodriver"):
@@ -84,7 +85,7 @@ class Browser:
         try:
             message = self.browser.find_element(By.CLASS_NAME, "cMessageTitle")
         except NoSuchElementException:
-            print("No messages.")
+            logger.info("No messages.")
             return
 
         subject = message.text.strip()
@@ -95,12 +96,13 @@ class Browser:
         newest_comment = self.browser.find_elements(By.CSS_SELECTOR, 'div[data-role="commentContent"]')[0]
         message = newest_comment.find_element(By.TAG_NAME, "p").text
 
-        print(f"Message from '{username}' with subject '{subject}' and message '{message}'")
+        logger.info(f"Message from '{username}' with subject '{subject}' and message '{message}'")
         try:
             verification_code = int(subject)
+            return
             await crud.update_warframe_name(verification_code=verification_code, warframe_name=username)
         except ValueError:
-            print(f"'{subject}' is not an integer.")
+            logger.info(f"'{subject}' is not an integer.")
 
         conversation_options = self.browser.find_element(By.ID, "elConvoActions")
         conversation_options.click()

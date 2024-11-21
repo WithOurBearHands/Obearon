@@ -47,7 +47,7 @@ mkdir data
 
 Run the docker image with:
 ```commandline
-docker run -d -v data:/data --env-file=.env bearification:latest
+docker run -d --name bearification -v=data:/data --env-file=.env bearification:latest
 ```
 
 ## Linting

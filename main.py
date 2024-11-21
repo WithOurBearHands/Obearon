@@ -5,6 +5,8 @@ The main file to control Bearification.
 import asyncio
 import os
 
+from loguru import logger
+
 from bearification.database import engine
 from bearification.discord_bot import close
 from bearification.discord_bot import start_discord_bot
@@ -19,9 +21,9 @@ if __name__ == "__main__":
         event_loop.run_until_complete(engine.create_tables())
         event_loop.run_until_complete(start_discord_bot())
     except KeyboardInterrupt:
-        print("Exiting.")
+        logger.info("Exiting.")
     except Exception as e:  # pylint: disable=broad-exception-caught
-        print(e)
+        logger.exception(e)
     finally:
         event_loop.close()
         close()
