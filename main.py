@@ -5,12 +5,11 @@ The main file to control Bearification.
 import asyncio
 import os
 
+from dotenv import load_dotenv
 from loguru import logger
 
 from bearification.database import engine
-from bearification.discord_bot import close
 from bearification.discord_bot import start_discord_bot
-from dotenv import load_dotenv
 
 if __name__ == "__main__":
     if not os.environ.get("DISCORD_TOKEN"):
@@ -26,4 +25,3 @@ if __name__ == "__main__":
         logger.exception(e)
     finally:
         event_loop.close()
-        close()

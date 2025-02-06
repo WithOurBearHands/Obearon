@@ -10,11 +10,11 @@ from discord import Forbidden
 from discord.ext import tasks
 from loguru import logger
 
-from bearification.browser import Browser
 from bearification.database import crud
+from bearification.mail import Mail
 
 client = discord.Bot()
-browser = Browser()
+mail = Mail()
 
 
 @client.event
@@ -27,12 +27,12 @@ async def on_ready() -> None:
     logger.info(f"{client.user} is ready.")
 
 
-@tasks.loop(seconds=120)
+@tasks.loop(seconds=60)
 async def check_for_verified_users() -> None:
     """
     Check for new verified users and assign nicknames/roles.
     """
-    await browser.check_messages()
+    await mail.check_messages()
 
     for user in await crud.get_verified_users():
         guild = client.get_guild(user.discord_guild_id)
@@ -155,12 +155,5 @@ async def start_discord_bot() -> None:
     """
     Start the Discord bot.
     """
-    browser.login()
+    mail.login()
     await client.start(os.environ["DISCORD_TOKEN"])
-
-
-def close() -> None:
-    """
-    Close anything that needs to be closed.
-    """
-    browser.close()

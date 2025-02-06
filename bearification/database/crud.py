@@ -1,6 +1,7 @@
 """
 Create, Read, Update and Delete operations in the database.
 """
+
 from loguru import logger
 from sqlalchemy import select
 from sqlalchemy import update
