@@ -4,6 +4,9 @@ A Discord bot to verify and link Discord accounts to Warframe accounts.
 
 ## Requirements
 - [Python 3.12](https://www.python.org/downloads/)
+- A [proton](https://proton.me) mail account.
+- Your Warframe account must be registered through the proton account and must be at least MR2.
+- After MR2, you must choose in the forum settings to be notified via mail upon receiving messages. 
 
 ## Setup
 
