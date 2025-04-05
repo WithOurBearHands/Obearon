@@ -1,5 +1,5 @@
 """
-Bearification's code receiving related module.
+Obearon's code receiving related module.
 """
 
 from math import ceil
@@ -12,7 +12,7 @@ from loguru import logger
 from protonmail import ProtonMail
 from protonmail.models import Message
 
-from bearification.database import crud
+from obearon.database import crud
 
 
 class Mail:

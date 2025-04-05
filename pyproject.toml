@@ -3,7 +3,7 @@ requires = ["setuptools >= 75.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "bearification"
+name = "obearon"
 version = "0.0.1"
 authors = [
   {name = "akshualy"}
@@ -26,11 +26,11 @@ dependencies = [
 ]
 
 [project.urls]
-Repository = "https://github.com/akshualy/Bearification.git"
-"Bug Tracker" = "https://github.com/akshualy/Bearification/issues"
+Repository = "https://github.com/akshualy/Obearon.git"
+"Bug Tracker" = "https://github.com/akshualy/Obearon/issues"
 
 [tool.setuptools]
-py-modules = ["bearification"]
+py-modules = ["obearon"]
 
 [tool.black]
 line-length = 120

@@ -1,5 +1,5 @@
 """
-Bearification's Discord related module.
+Obearon's Discord related module.
 """
 
 import os
@@ -10,8 +10,8 @@ from discord import Forbidden
 from discord.ext import tasks
 from loguru import logger
 
-from bearification.database import crud
-from bearification.mail import Mail
+from obearon.database import crud
+from obearon.mail import Mail
 
 client = discord.Bot()
 mail = Mail()

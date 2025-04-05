@@ -6,8 +6,8 @@ from loguru import logger
 from sqlalchemy import select
 from sqlalchemy import update
 
-from bearification.database import engine
-from bearification.database import models
+from obearon.database import engine
+from obearon.database import models
 
 
 async def create_user(discord_guild_id: int, discord_user_id: int, verification_code: int) -> None:

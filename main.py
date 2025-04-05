@@ -1,5 +1,5 @@
 """
-The main file to control Bearification.
+The main file to control Obearon.
 """
 
 import asyncio
@@ -8,8 +8,8 @@ import os
 from dotenv import load_dotenv
 from loguru import logger
 
-from bearification.database import engine
-from bearification.discord_bot import start_discord_bot
+from obearon.database import engine
+from obearon.discord_bot import start_discord_bot
 
 if __name__ == "__main__":
     if not os.environ.get("DISCORD_TOKEN"):

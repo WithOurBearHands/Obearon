@@ -6,10 +6,10 @@ from sqlalchemy.ext.asyncio import async_sessionmaker
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.ext.asyncio import create_async_engine
 
-from bearification.database.models import GuildRole
-from bearification.database.models import User
+from obearon.database.models import GuildRole
+from obearon.database.models import User
 
-async_engine = create_async_engine("sqlite+aiosqlite:///data/bearification.db")
+async_engine = create_async_engine("sqlite+aiosqlite:///data/obearon.db")
 async_session = async_sessionmaker(async_engine, expire_on_commit=False, class_=AsyncSession)
 
 

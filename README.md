@@ -1,4 +1,4 @@
-# Bearification
+# Obearon
 
 A Discord bot to verify and link Discord accounts to Warframe accounts.
 
@@ -39,7 +39,7 @@ python main.py
 
 Build the docker image with:
 ```commandline
-docker build -t bearification:latest .
+docker build -t obearon:latest .
 ```
 
 If you haven't run the docker image before, make sure the data folder exists:
@@ -49,7 +49,7 @@ mkdir data
 
 Run the docker image with:
 ```commandline
-docker run -d --name bearification -v=data:/data --env-file=.env bearification:latest
+docker run -d --name obearon -v=data:/data --env-file=.env obearon:latest
 ```
 
 ## Linting
@@ -60,5 +60,5 @@ There are several automatic code formatting tools available.
 black .
 isort .
 flake8
-pylint main.py bearification
+pylint main.py obearon
 ```
