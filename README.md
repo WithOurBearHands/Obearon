@@ -49,7 +49,7 @@ mkdir data
 
 Run the docker image with:
 ```commandline
-docker run -d --name obearon -v=data:/data --env-file=.env obearon:latest
+docker run -d --name obearon --mount type=bind,src="$(pwd)"/data,dst=/data --env-file=.env obearon:latest
 ```
 
 ## Linting
