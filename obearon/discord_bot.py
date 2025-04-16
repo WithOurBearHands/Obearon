@@ -81,6 +81,16 @@ class VerifyView(discord.ui.View):
             logger.warning(
                 f"Was not allowed to change roles of {interaction.user.display_name} ({interaction.user.id})."
             )
+            interaction.response.send_message(
+                content="The bot was not able to give you the friend role. Let an admin know!",
+                ephemeral=True,
+            )
+            return
+
+        interaction.response.send_message(
+            content="Welcome to With Our Bear Hands, friend!",
+            ephemeral=True,
+        )
 
     @discord.ui.button(
         label="Join as a clan member", style=discord.ButtonStyle.green, custom_id="verify_view:join_as_clan"
