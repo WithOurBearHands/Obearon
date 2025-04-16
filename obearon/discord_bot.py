@@ -61,10 +61,33 @@ class VerifyView(discord.ui.View):
         """
         super().__init__(timeout=None)
 
-    @discord.ui.button(label="Verify", style=discord.ButtonStyle.green, custom_id="verify_view:verify")
-    async def on_verify_click(self, _: discord.ui.Button, interaction: discord.Interaction) -> None:
+    @discord.ui.button(
+        label="Join as a friend", style=discord.ButtonStyle.blurple, custom_id="verify_view:join_as_friend"
+    )
+    async def on_join_as_friend_click(self, _: discord.ui.Button, interaction: discord.Interaction) -> None:
         """
-        Triggered when a user clicks the "Verify" button.
+        Triggered when a user clicks the "Join as a friend" button.
+
+        Args:
+          _: Required button argument.
+          interaction: The interaction of the user.
+        """
+        # TODO Create and use friend role instead of fixed role ID
+        # await crud.get_verify_role(interaction.guild_id)
+        logger.info(f"Marking {interaction.user.display_name} ({interaction.user.id}) as friend.")
+        try:
+            await interaction.user.add_roles(interaction.guild.get_role(1361003440313995383))
+        except Forbidden:
+            logger.warning(
+                f"Was not allowed to change roles of {interaction.user.display_name} ({interaction.user.id})."
+            )
+
+    @discord.ui.button(
+        label="Join as a clan member", style=discord.ButtonStyle.green, custom_id="verify_view:join_as_clan"
+    )
+    async def on_join_as_clan_click(self, _: discord.ui.Button, interaction: discord.Interaction) -> None:
+        """
+        Triggered when a user clicks the "Join as a clan member" button.
 
         Args:
           _: Required button argument.
