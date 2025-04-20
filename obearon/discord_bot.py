@@ -144,8 +144,27 @@ async def set_verify_role(interaction: discord.Interaction, role: discord.Role) 
         interaction: The interaction of the user who executed this command.
         role: The role to store.
     """
-    await crud.set_verify_role(discord_guild_id=interaction.guild_id, discord_role_id=role.id)
+    await crud.set_verify_role(guild_id=interaction.guild_id, verified_role_id=role.id)
     await interaction.respond(content=f"**{role.name}** has been set as the verified role.", ephemeral=True)
+
+
+@client.application_command(
+    name="set_friend_role",
+    description="Set the role to give for server friends that join.",
+    contexts={discord.InteractionContextType.guild},
+    default_member_permissions=discord.Permissions(manage_roles=True),
+)
+@discord.option("role", type=discord.SlashCommandOptionType.role)
+async def set_friend_role(interaction: discord.Interaction, role: discord.Role) -> None:
+    """
+    Sets the friend role to be given for server friends that join.
+
+    Args:
+        interaction: The interaction of the user who executed this command.
+        role: The role to store.
+    """
+    await crud.set_friend_role(guild_id=interaction.guild_id, friend_role_id=role.id)
+    await interaction.respond(content=f"**{role.name}** has been set as the friend role.", ephemeral=True)
 
 
 @client.application_command(
@@ -161,9 +180,29 @@ async def get_verify_role(interaction: discord.Interaction) -> None:
     Args:
         interaction: The interaction of the user who executed this command.
     """
-    role = await crud.get_verify_role(discord_guild_id=interaction.guild_id)
+    role = await crud.get_verify_role(guild_id=interaction.guild_id)
     await interaction.respond(
-        content=(f"<@&{role.discord_role_id}>" if role else "No role") + " has been set as the verified role.",
+        content=(f"<@&{role.verified_role_id}>" if role else "No role") + " has been set as the verified role.",
+        ephemeral=True,
+    )
+
+
+@client.application_command(
+    name="get_friend_role",
+    description="View the role to give for server friends that join.",
+    contexts={discord.InteractionContextType.guild},
+    default_member_permissions=discord.Permissions(manage_roles=True),
+)
+async def get_friend_role(interaction: discord.Interaction) -> None:
+    """
+    Gets the friend role to be given for server friends that join.
+
+    Args:
+        interaction: The interaction of the user who executed this command.
+    """
+    role = await crud.get_friend_role(guild_id=interaction.guild_id)
+    await interaction.respond(
+        content=(f"<@&{role.friend_role_id}>" if role else "No role") + " has been set as the friend role.",
         ephemeral=True,
     )
 
