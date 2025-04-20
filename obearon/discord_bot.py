@@ -104,24 +104,19 @@ class VerifyView(discord.ui.View):
           interaction: The interaction of the user.
         """
         verification_code = random.randint(100_000, 999_999)
-        if not await crud.create_verification(
+        existing_verification_code = await crud.create_verification(
             discord_guild_id=interaction.guild_id,
             discord_user_id=interaction.user.id,
             verification_code=verification_code,
-        ):
-            await interaction.response.send_message(
-                content=(
-                    "You already have a pending verification. "
-                    "Please check the message above for your verification code."
-                ),
-                ephemeral=True,
-            )
-            return
-
-        logger.info(
-            f"Added {interaction.user.display_name} ({interaction.user.id}) "
-            f"with verification code {verification_code}."
         )
+        if existing_verification_code:
+            verification_code = existing_verification_code
+
+        if not existing_verification_code:
+            logger.info(
+                f"Added {interaction.user.display_name} ({interaction.user.id}) "
+                f"with verification code {verification_code}."
+            )
 
         await interaction.response.send_message(
             content=(

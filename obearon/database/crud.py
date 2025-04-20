@@ -4,13 +4,12 @@ Create, Read, Update and Delete operations in the database.
 
 from loguru import logger
 from sqlalchemy import delete, select
-from sqlalchemy.exc import IntegrityError
 
 from obearon.database import engine
 from obearon.database import models
 
 
-async def create_verification(discord_guild_id: int, discord_user_id: int, verification_code: int) -> bool:
+async def create_verification(discord_guild_id: int, discord_user_id: int, verification_code: int) -> str | None:
     """
     Creates a pending verification.
 
@@ -20,20 +19,28 @@ async def create_verification(discord_guild_id: int, discord_user_id: int, verif
         verification_code: The verification code the user needs to send us.
 
     Returns:
-        True if the verification was created, False if there is a pending verification.
+        The verification code if there is a pending verification, None if the verification was created.
     """
     async with engine.async_session() as session, session.begin():
-        try:
-            session.add(
-                models.Verification(
-                    discord_guild_id=discord_guild_id,
-                    discord_user_id=discord_user_id,
-                    verification_code=verification_code,
-                )
+        verification_query = await session.execute(
+            select(models.Verification).where(
+                models.Verification.discord_guild_id == discord_guild_id,
+                models.Verification.discord_user_id == discord_user_id,
             )
-            return True
-        except IntegrityError:
-            return False
+        )
+        verification = verification_query.scalars().first()
+        if verification is not None:
+            logger.info(f"{discord_user_id} already has a pending verification in {discord_guild_id}.")
+            return verification.verification_code
+
+        session.add(
+            models.Verification(
+                discord_guild_id=discord_guild_id,
+                discord_user_id=discord_user_id,
+                verification_code=verification_code,
+            )
+        )
+        return None
 
 
 async def update_warframe_name(verification_code: int, warframe_name: str) -> None:
