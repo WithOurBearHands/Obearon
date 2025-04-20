@@ -4,6 +4,4 @@ COPY main.py pyproject.toml /
 COPY /obearon /obearon
 RUN pip install .
 
-RUN alembic upgrade head
-
-ENTRYPOINT ["python3", "-u", "main.py"]
+ENTRYPOINT ["./start.sh"]
