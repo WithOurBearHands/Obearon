@@ -72,11 +72,18 @@ class VerifyView(discord.ui.View):
           _: Required button argument.
           interaction: The interaction of the user.
         """
-        # TODO Create and use friend role instead of fixed role ID
-        # await crud.get_verify_role(interaction.guild_id)
+        guild_role = await crud.get_friend_role(interaction.guild_id)
+        if not guild_role:
+            logger.warning(f"No friend role set for {interaction.guild_id}.")
+            await interaction.response.send_message(
+                content="The bot was not able to give you the friend role because it is not set. Let an admin know!",
+                ephemeral=True,
+            )
+            return
+
         logger.info(f"Marking {interaction.user.display_name} ({interaction.user.id}) as friend.")
         try:
-            await interaction.user.add_roles(interaction.guild.get_role(1361003440313995383))
+            await interaction.user.add_roles(interaction.guild.get_role(guild_role.friend_role_id))
         except Forbidden:
             logger.warning(
                 f"Was not allowed to change roles of {interaction.user.display_name} ({interaction.user.id})."
