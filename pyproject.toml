@@ -23,6 +23,7 @@ dependencies = [
     "aiosqlite==0.21.0",
     "loguru==0.7.3",
     "beautifulsoup4==4.13.3",
+    "alembic==1.15.2",
 ]
 
 [project.urls]
@@ -34,6 +35,10 @@ py-modules = ["obearon"]
 
 [tool.black]
 line-length = 120
+extend-exclude = '''
+alembic/
+'''
+
 
 [tool.isort]
 profile = "black"

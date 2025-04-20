@@ -8,7 +8,6 @@ import os
 from dotenv import load_dotenv
 from loguru import logger
 
-from obearon.database import engine
 from obearon.discord_bot import start_discord_bot
 
 if __name__ == "__main__":
@@ -17,7 +16,6 @@ if __name__ == "__main__":
 
     event_loop = asyncio.get_event_loop_policy().new_event_loop()
     try:
-        event_loop.run_until_complete(engine.create_tables())
         event_loop.run_until_complete(start_discord_bot())
     except KeyboardInterrupt:
         logger.info("Exiting.")

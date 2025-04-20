@@ -12,7 +12,7 @@ A Discord bot to verify and link Discord accounts to Warframe accounts.
 
 Make sure you only install after being in a virtual environment.
 
-```commandline
+```bash
 pip install .
 ```
 
@@ -31,34 +31,48 @@ Copy [the example env file](.env.example) into a file called `.env` and fill in 
 
 To run this application simply execute
 
-```commandline
+```bash
 python main.py
 ```
 
 ### Running from Docker
 
 Build the docker image with:
-```commandline
+```bash
 docker build -t obearon:latest .
 ```
 
 If you haven't run the docker image before, make sure the data folder exists:
-```commandline
+```bash
 mkdir data
 ```
 
 Run the docker image with:
-```commandline
+```bash
 docker run -d --name obearon --mount type=bind,src="$(pwd)"/data,dst=/data --env-file=.env obearon:latest
+```
+
+## Database
+
+This project uses alembic for database version management.
+
+To check whether you have pending changes that need to be migrated:
+```bash
+alembic check
+```
+
+To create a migration with pending changes:
+```bash
+alembic revision --autogenerate
 ```
 
 ## Linting
 
 There are several automatic code formatting tools available.
 
-```commandline
+```bash
 black .
 isort .
 flake8
-pylint main.py obearon
+pylint .
 ```
