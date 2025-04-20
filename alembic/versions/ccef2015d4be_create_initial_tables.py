@@ -28,18 +28,17 @@ def upgrade() -> None:
         sa.PrimaryKeyConstraint("discord_guild_id"),
     )
     op.create_table(
-        "user",
+        "verification",
         sa.Column("discord_guild_id", sa.BigInteger(), nullable=False),
         sa.Column("discord_user_id", sa.BigInteger(), nullable=False),
         sa.Column("warframe_name", sa.String(length=24), nullable=True),
         sa.Column("verification_code", sa.Integer(), nullable=True),
         sa.Column("verified", sa.Boolean(), server_default="false", nullable=False),
-        sa.Column("linked", sa.Boolean(), server_default="false", nullable=False),
         sa.PrimaryKeyConstraint("discord_guild_id", "discord_user_id"),
     )
 
 
 def downgrade() -> None:
     """Downgrade schema."""
-    op.drop_table("user")
+    op.drop_table("verification")
     op.drop_table("guild_role")

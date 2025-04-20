@@ -34,7 +34,7 @@ async def check_for_verified_users() -> None:
     """
     await mail.check_messages()
 
-    for user in await crud.get_verified_users():
+    for user in await crud.get_successful_verifications():
         guild = client.get_guild(user.discord_guild_id)
         verified_role = await crud.get_verify_role(user.discord_guild_id)
         member = await guild.fetch_member(user.discord_user_id)
@@ -44,7 +44,7 @@ async def check_for_verified_users() -> None:
             if verified_role:
                 await member.add_roles(guild.get_role(verified_role.discord_role_id))
                 logger.info(f"Updated roles of {user.discord_user_id} with {verified_role.discord_role_id}")
-            await crud.update_user_as_linked(discord_user_id=user.discord_user_id)
+            await crud.remove_verification(discord_user_id=user.discord_user_id)
         except Forbidden:
             logger.info(f"Could not change username or roles of {user.discord_user_id} in {user.discord_guild_id}")
 
@@ -104,10 +104,23 @@ class VerifyView(discord.ui.View):
           interaction: The interaction of the user.
         """
         verification_code = random.randint(100_000, 999_999)
-        await crud.create_user(
+        if not await crud.create_verification(
             discord_guild_id=interaction.guild_id,
             discord_user_id=interaction.user.id,
             verification_code=verification_code,
+        ):
+            await interaction.response.send_message(
+                content=(
+                    "You already have a pending verification. "
+                    "Please check the message above for your verification code."
+                ),
+                ephemeral=True,
+            )
+            return
+
+        logger.info(
+            f"Added {interaction.user.display_name} ({interaction.user.id}) "
+            f"with verification code {verification_code}."
         )
 
         await interaction.response.send_message(

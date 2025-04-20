@@ -15,19 +15,18 @@ class Base(DeclarativeBase):
     """
 
 
-class User(Base):
+class Verification(Base):
     """
     Table that stores user verification information.
     """
 
-    __tablename__ = "user"
+    __tablename__ = "verification"
 
     discord_guild_id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
     discord_user_id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
     warframe_name: Mapped[str | None] = mapped_column(String(24))
     verification_code: Mapped[int | None]
     verified: Mapped[bool] = mapped_column(default=False, server_default="false")
-    linked: Mapped[bool] = mapped_column(default=False, server_default="false")
 
 
 class GuildRole(Base):
@@ -37,5 +36,5 @@ class GuildRole(Base):
 
     __tablename__ = "guild_role"
 
-    discord_guild_id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
-    discord_role_id: Mapped[int] = mapped_column(BigInteger)
+    guild_id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
+    verified_role_id: Mapped[int] = mapped_column(BigInteger)
