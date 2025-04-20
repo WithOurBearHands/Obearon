@@ -20,13 +20,13 @@ depends_on: Union[str, Sequence[str], None] = None
 
 def upgrade() -> None:
     """Upgrade schema."""
-    op.rename_column('guild_role', 'discord_guild_id', 'guild_id')
-    op.rename_column('guild_role', 'discord_role_id', 'verified_role_id')
+    op.alter_column('guild_role', 'discord_guild_id', new_column_name='guild_id')
+    op.alter_column('guild_role', 'discord_role_id', new_column_name='verified_role_id')
     op.add_column('guild_role', sa.Column('friend_role_id', sa.BigInteger(), nullable=False))
 
 
 def downgrade() -> None:
     """Downgrade schema."""
-    op.rename_column('guild_role', 'guild_id', 'discord_guild_id')
-    op.rename_column('guild_role', 'verified_role_id', 'discord_role_id')
+    op.alter_column('guild_role', 'guild_id', new_column_name='discord_guild_id')
+    op.alter_column('guild_role', 'verified_role_id', new_column_name='discord_role_id')
     op.drop_column('guild_role', 'friend_role_id')
