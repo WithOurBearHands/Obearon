@@ -1,18 +1,13 @@
 """
-Database table related module.
+Verification model.
 """
 
 from sqlalchemy import BigInteger
 from sqlalchemy import String
-from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
 
-
-class Base(DeclarativeBase):
-    """
-    Base class needed by SQLAlchemy
-    """
+from obearon.database.engine import Base
 
 
 class Verification(Base):
@@ -27,15 +22,3 @@ class Verification(Base):
     warframe_name: Mapped[str | None] = mapped_column(String(24))
     verification_code: Mapped[int | None]
     verified: Mapped[bool] = mapped_column(default=False, server_default="false")
-
-
-class GuildRole(Base):
-    """
-    Table that stores the verify role.
-    """
-
-    __tablename__ = "guild_role"
-
-    guild_id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
-    verified_role_id: Mapped[int | None] = mapped_column(BigInteger)
-    friend_role_id: Mapped[int | None] = mapped_column(BigInteger)

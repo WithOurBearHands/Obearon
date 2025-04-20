@@ -3,7 +3,8 @@ Create, Read, Update and Delete operations in the database.
 """
 
 from loguru import logger
-from sqlalchemy import delete, select
+from sqlalchemy import delete
+from sqlalchemy import select
 
 from obearon.database import engine
 from obearon.database import models
@@ -89,9 +90,7 @@ async def remove_verification(discord_user_id: int) -> None:
         discord_user_id: The Discord ID of the user to remove the verification for.
     """
     async with engine.async_session() as session, session.begin():
-        await session.execute(
-            delete(models.Verification).where(models.Verification.discord_user_id == discord_user_id)
-        )
+        await session.execute(delete(models.Verification).where(models.Verification.discord_user_id == discord_user_id))
 
 
 async def set_verify_role(guild_id: int, verified_role_id: int) -> None:
@@ -103,9 +102,7 @@ async def set_verify_role(guild_id: int, verified_role_id: int) -> None:
         verified_role_id: The ID of the role to be given.
     """
     async with engine.async_session() as session, session.begin():
-        role_query = await session.execute(
-            select(models.GuildRole).where(models.GuildRole.guild_id == guild_id)
-        )
+        role_query = await session.execute(select(models.GuildRole).where(models.GuildRole.guild_id == guild_id))
         role = role_query.scalars().first()
         if role is not None:
             role.discord_role_id = verified_role_id
@@ -127,9 +124,7 @@ async def get_verify_role(guild_id: int) -> models.GuildRole | None:
         A GuildRole instance or None if no information exists.
     """
     async with engine.async_session() as session, session.begin():
-        role_query = await session.execute(
-            select(models.GuildRole).where(models.GuildRole.guild_id == guild_id)
-        )
+        role_query = await session.execute(select(models.GuildRole).where(models.GuildRole.guild_id == guild_id))
         return role_query.scalars().first()
 
 
@@ -142,9 +137,7 @@ async def set_friend_role(guild_id: int, friend_role_id: int) -> None:
         friend_role_id: The ID of the role to be given.
     """
     async with engine.async_session() as session, session.begin():
-        role_query = await session.execute(
-            select(models.GuildRole).where(models.GuildRole.guild_id == guild_id)
-        )
+        role_query = await session.execute(select(models.GuildRole).where(models.GuildRole.guild_id == guild_id))
         role = role_query.scalars().first()
         if role is not None:
             role.friend_role_id = friend_role_id
@@ -166,7 +159,5 @@ async def get_friend_role(guild_id: int) -> models.GuildRole | None:
         A GuildRole instance or None if no information exists.
     """
     async with engine.async_session() as session, session.begin():
-        role_query = await session.execute(
-            select(models.GuildRole).where(models.GuildRole.guild_id == guild_id)
-        )
+        role_query = await session.execute(select(models.GuildRole).where(models.GuildRole.guild_id == guild_id))
         return role_query.scalars().first()
