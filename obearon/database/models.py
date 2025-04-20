@@ -37,5 +37,5 @@ class GuildRole(Base):
     __tablename__ = "guild_role"
 
     guild_id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
-    verified_role_id: Mapped[int] = mapped_column(BigInteger)
-    friend_role_id: Mapped[int] = mapped_column(BigInteger)
+    verified_role_id: Mapped[int | None] = mapped_column(BigInteger)
+    friend_role_id: Mapped[int | None] = mapped_column(BigInteger)

@@ -23,9 +23,10 @@ def upgrade() -> None:
     """Upgrade schema."""
     op.create_table(
         "guild_role",
-        sa.Column("discord_guild_id", sa.BigInteger(), nullable=False),
-        sa.Column("discord_role_id", sa.BigInteger(), nullable=False),
-        sa.PrimaryKeyConstraint("discord_guild_id"),
+        sa.Column("guild_id", sa.BigInteger(), nullable=False),
+        sa.Column("verified_role_id", sa.BigInteger(), nullable=True),
+        sa.Column("friend_role_id", sa.BigInteger(), nullable=True),
+        sa.PrimaryKeyConstraint("guild_id"),
     )
     op.create_table(
         "verification",
