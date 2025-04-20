@@ -4,4 +4,7 @@ COPY main.py pyproject.toml /
 COPY /obearon /obearon
 RUN pip install .
 
-ENTRYPOINT ["./start.sh"]
+COPY docker.sh /docker.sh
+RUN chmod +x /docker.sh
+
+ENTRYPOINT ["./docker.sh"]
