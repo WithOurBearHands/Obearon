@@ -8,7 +8,7 @@ import os
 from dotenv import load_dotenv
 from loguru import logger
 
-from obearon.discord_bot import start_discord_bot
+from obearon.discord.bot import start_discord_bot
 
 if __name__ == "__main__":
     if not os.environ.get("DISCORD_TOKEN"):
