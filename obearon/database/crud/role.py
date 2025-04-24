@@ -21,7 +21,7 @@ async def set_verify_role(guild_id: int, verified_role_id: int) -> None:
         role_query = await session.execute(select(models.GuildRole).where(models.GuildRole.guild_id == guild_id))
         role = role_query.scalars().first()
         if role is not None:
-            role.discord_role_id = verified_role_id
+            role.verified_role_id = verified_role_id
             logger.info(f"Updated {guild_id} with new role ID {verified_role_id}.")
             return
 
