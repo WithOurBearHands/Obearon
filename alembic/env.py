@@ -6,6 +6,7 @@ from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from alembic import context
+from obearon.database import models
 from obearon.database.engine import Base
 
 # this is the Alembic Config object, which provides

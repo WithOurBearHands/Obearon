@@ -30,7 +30,7 @@ async def start_discord_bot() -> None:
     Start the Discord bot.
     """
     for directory_entry in os.listdir("obearon/discord/commands"):
-        if directory_entry.endswith(".py") or directory_entry == "__init__.py":
+        if not directory_entry.endswith(".py") or directory_entry == "__init__.py":
             continue
         client.load_extension(f"obearon.discord.commands.{directory_entry.replace(".py", "")}")
         logger.info(f"Loaded the cog in {directory_entry}.")
