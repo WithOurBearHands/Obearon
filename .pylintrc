@@ -1,0 +1,11 @@
+[MAIN]
+ignore-paths=alembic/,venv/
+
+[MISCELLANEOUS]
+notes=FIXME
+
+[MESSAGES CONTROL]
+disable=R0903,W0212
+
+[tool.pylint.code_style]
+max-line-length = 120
