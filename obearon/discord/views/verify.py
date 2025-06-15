@@ -24,7 +24,9 @@ class VerifyView(discord.ui.View):
         super().__init__(timeout=None)
 
     @discord.ui.button(
-        label="Join as a friend", style=discord.ButtonStyle.blurple, custom_id="verify_view:join_as_friend"
+        label="Join as a friend",
+        style=discord.ButtonStyle.blurple,
+        custom_id="verify_view:join_as_friend",
     )
     async def on_join_as_friend_click(self, _: discord.ui.Button, interaction: discord.Interaction) -> None:
         """
@@ -62,7 +64,9 @@ class VerifyView(discord.ui.View):
         )
 
     @discord.ui.button(
-        label="Join as a clan member", style=discord.ButtonStyle.green, custom_id="verify_view:join_as_clan"
+        label="Join as a clan member",
+        style=discord.ButtonStyle.green,
+        custom_id="verify_view:join_as_clan",
     )
     async def on_join_as_clan_click(self, _: discord.ui.Button, interaction: discord.Interaction) -> None:
         """

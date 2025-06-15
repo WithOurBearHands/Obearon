@@ -12,7 +12,7 @@ from obearon.discord.views.verify import VerifyView
 from obearon.mail import Mail
 
 client = discord.Bot()
-mail = Mail()
+# mail = Mail()
 
 
 @client.event
@@ -21,7 +21,7 @@ async def on_ready() -> None:
     Triggered when pycord reports the bot as fully loaded.
     """
     client.add_view(VerifyView())
-    check_for_verified_users.start(client=client, mail=mail)
+    # check_for_verified_users.start(client=client, mail=mail)
     logger.info(f"{client.user} is ready.")
 
 
@@ -35,5 +35,5 @@ async def start_discord_bot() -> None:
         client.load_extension(f"obearon.discord.commands.{directory_entry.replace(".py", "")}")
         logger.info(f"Loaded the cog in {directory_entry}.")
 
-    mail.login()
+    # mail.login()
     await client.start(os.environ["DISCORD_TOKEN"])

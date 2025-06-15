@@ -5,6 +5,8 @@ Giveaway command.
 import discord
 from discord.ext import commands
 
+from obearon.discord.modals.giveaway import GiveawayModal
+
 
 class Giveaway(commands.Cog):
     """
@@ -28,8 +30,7 @@ class Giveaway(commands.Cog):
         Args:
             ctx: The context of the user who executed this command.
         """
-        # TODO: Implement GiveawayModal
-        # await ctx.respond(modal=GiveawayModal())
+        await ctx.send_modal(GiveawayModal(title="Create Giveaway"))
 
 
 def setup(bot: commands.Bot) -> None:

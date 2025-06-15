@@ -55,7 +55,8 @@ async def update_warframe_name(verification_code: int, warframe_name: str) -> No
     async with engine.async_session() as session, session.begin():
         verification_query = await session.execute(
             select(models.Verification).where(
-                models.Verification.verification_code == verification_code, models.Verification.verified.is_(False)
+                models.Verification.verification_code == verification_code,
+                models.Verification.verified.is_(False),
             )
         )
         verification = verification_query.scalars().first()
