@@ -9,7 +9,7 @@ import os
 
 from bs4 import BeautifulSoup
 from loguru import logger
-import regex
+import re
 
 from obearon.database import crud
 
@@ -21,7 +21,7 @@ class Mail:
 
     def __init__(self):
         self.mail = imaplib.IMAP4_SSL("imap.gmail.com")
-        self.code_regex = regex.compile(r"\d{6}")
+        self.code_regex = re.compile(r"\d{6}")
 
     def login(self) -> None:
         """
