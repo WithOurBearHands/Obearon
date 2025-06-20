@@ -2,83 +2,107 @@
 Obearon's code receiving related module.
 """
 
-from math import ceil
+import email
+from email.header import decode_header
+import imaplib
 import os
 
-from aiohttp import ClientSession
-from aiohttp import TCPConnector
 from bs4 import BeautifulSoup
 from loguru import logger
-from protonmail import ProtonMail
-from protonmail.models import Message
+import regex
 
 from obearon.database import crud
 
 
 class Mail:
     """
-    Class to cache and interact with the proton mail instance.
+    Class to cache and interact with the mail instance.
     """
 
     def __init__(self):
-        self.proton = ProtonMail()
+        self.mail = imaplib.IMAP4_SSL("imap.gmail.com")
+        self.code_regex = regex.compile(r"\d{6}")
 
     def login(self) -> None:
         """
-        Log in to Proton mail.
+        Log in to the mail provider.
         """
-        self.proton.login(
-            username=os.environ["PROTON_USERNAME"],
-            password=os.environ["PROTON_PASSWORD"],
+        self.mail.login(
+            user=os.environ["EMAIL_USERNAME"],
+            password=os.environ["EMAIL_PASSWORD"],
         )
+        self.mail.select("inbox")
 
     async def check_messages(self) -> None:
         """
         Wait for messages. Upon receiving a message, the contents are logged and the message is deleted.
         """
-        messages_to_delete = []
-        for message in await self.get_messages():
-            if message.sender.address != "noreply@invisioncloudcommunity.com" or not message.unread:
+        status, messages = self.mail.search(None, 'FROM "noreply@invisioncloudcommunity.com"')
+        if status != "OK":
+            logger.error(f"Mail search returned '{status}'.")
+            return
+
+        # Messages is an array of one element with all message ids spaced,
+        # for example [b"1 2 3 4 5"].
+        for message_id in messages[0].split():
+            status, raw_message = self.mail.fetch(message_id, "(RFC822)")
+            if status != "OK":
+                logger.warning(f"Mail fetch for mail '{message_id}' returned '{status}'.")
                 continue
 
-            message_content = self.proton.read_message(message)
+            # Similarly to search, fetch returns a two element array, where the first
+            # array element is a tuple containing all information.
+            # The first element in that tuple is the standard the second element is in,
+            # which we know is RFC822.
+            message = email.message_from_bytes(raw_message[0][1])
 
-            soup = BeautifulSoup(message_content.body, "html.parser")
-            subject_tags = soup.find_all("h2")
-            if len(subject_tags) == 0:
+            # Get the subject of the message and, if necessary, decode it.
+            subject, encoding = decode_header(message["Subject"])[0]
+            if isinstance(subject, bytes):
+                subject = subject.decode(encoding or "utf-8", errors="ignore")
+
+            if not message.is_multipart():
+                logger.warning(f"Message with subject '{subject}' has an unexpected body. Ignoring it.")
                 continue
 
-            warframe_name = message.subject.replace(" has sent you a message", "")
-            subject = subject_tags[0].text.strip()
+            message_parts = list(message.walk())
+            if len(message_parts) < 3:
+                logger.warning(f"Message with subject '{subject}' has an unexpected body. Ignoring it.")
+                continue
 
-            logger.info(f"Message from '{warframe_name}' with subject '{subject}'")
+            body = message_parts[2].get_payload()
+
+            soup = BeautifulSoup(body, "html.parser")
+            warframe_message_subject_tags = soup.find_all("h2")
+            warframe_message_content_tags = soup.find_all("div")
+            if len(warframe_message_subject_tags) == 0 or len(warframe_message_subject_tags) == 0:
+                logger.warning(
+                    f"The Warframe message body changed. "
+                    f"Soup tag finding needs to be adjusted for the following:\n{body}"
+                )
+                continue
+
+            self.mail.store(message_id, "+FLAGS", "\\Deleted")
+
+            warframe_name = subject.replace(" has sent you a message", "")
+            warframe_subject = warframe_message_subject_tags[0].text.strip()
+            warframe_message = warframe_message_content_tags[0].text.strip()
+
+            logger.info(
+                f"Message from '{warframe_name}' with subject '{warframe_subject}' and message '{warframe_message}'"
+            )
+
+            verification_code = self.code_regex.search(warframe_subject)
+            if not verification_code:
+                verification_code = self.code_regex.search(warframe_message)
+            if not verification_code:
+                logger.warning("Neither subject nor message contain a code.")
+                continue
+
             try:
-                verification_code = int(subject)
+                verification_code = int(verification_code.group())
                 await crud.update_warframe_name(verification_code=verification_code, warframe_name=warframe_name)
             except ValueError:
                 logger.info(f"'{subject}' is not an integer.")
 
-            messages_to_delete.append(message)
-
-        self.proton.delete_messages(messages_to_delete)
-
-    async def get_messages(self, page_size: int | None = 150, label_id: str = "5") -> list[Message]:
-        """
-        Get all messages from proton.
-        Rewrite of the library's method to work in current async context.
-        """
-        pages = ceil(self.proton.get_messages_count()[5]["Total"] / page_size)
-        args = [(page_num, page_size, label_id) for page_num in range(pages)]
-
-        connector = TCPConnector(limit=100)
-        headers = dict(self.proton.session.headers)
-        cookies = self.proton.session.cookies.get_dict()
-
-        messages = []
-        async with ClientSession(headers=headers, cookies=cookies, connector=connector) as client:
-            for arg in args:
-                messages.append(await self.proton._async_get_messages(client, *arg))
-        messages_dict = self.proton._flattening_lists(messages)
-        messages = [self.proton._convert_dict_to_message(message) for message in messages_dict]
-
-        return messages
+        self.mail.expunge()
