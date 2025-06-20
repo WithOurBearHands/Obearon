@@ -17,3 +17,4 @@ dist/
 # Project specific files
 *.env
 data/
+start.sh
