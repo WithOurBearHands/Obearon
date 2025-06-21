@@ -10,7 +10,6 @@ dependencies = [
     "beautifulsoup4>=4.13.4",
     "dateparser>=1.2.1",
     "loguru>=0.7.3",
-    "protonmail-api-client>=2.4.2",
     "py-cord>=2.6.1",
     "python-dotenv>=1.1.0",
     "sqlalchemy>=2.0.41",

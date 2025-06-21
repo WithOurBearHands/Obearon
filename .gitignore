@@ -5,6 +5,7 @@ build/
 dist/
 wheels/
 *.egg-info
+.idea/
 
 # Virtual environments
 .venv
@@ -12,3 +13,5 @@ wheels/
 # Project specific files
 *.env
 data/
+start.sh
+uv.lock
