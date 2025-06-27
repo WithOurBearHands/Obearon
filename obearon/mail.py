@@ -6,10 +6,11 @@ import email
 from email.header import decode_header
 import imaplib
 import os
+import re
+from typing import Any, Callable
 
 from bs4 import BeautifulSoup
 from loguru import logger
-import re
 
 from obearon.database import crud
 
@@ -33,11 +34,37 @@ class Mail:
         )
         self.mail.select("inbox")
 
+    def _wrap_imap_calls(self, func: Callable[..., Any], *args, _retry: bool = True, **kwargs):
+        """
+        Wraps calls to IMAP in an exception handler. Useful because especially Gmail tends to time out the login
+        session a lot.
+        Will retry once and then reraise the exception.
+
+        Args:
+            func: The function to wrap
+            args: The arguments for the wrapped function
+            _retry: Internal field for retry logic. You may set it to False to disable retry.
+            kwargs: The keyword arguments for the wrapped function
+
+        Returns:
+            What the function returns.
+        """
+        try:
+            return func(*args, **kwargs)
+        except imaplib.IMAP4.abort as abort:
+            if _retry:
+                logger.warning("Received abort exception, retrying login...")
+                self.login()
+                return self._wrap_imap_calls(func, *args, _retry=False, **kwargs)
+            else:
+                logger.error("Logging in again did not work.")
+                raise abort
+
     async def check_messages(self) -> None:
         """
         Wait for messages. Upon receiving a message, the contents are logged and the message is deleted.
         """
-        status, messages = self.mail.search(None, 'FROM "noreply@invisioncloudcommunity.com"')
+        status, messages = self._wrap_imap_calls(self.mail.search, None, 'FROM "noreply@invisioncloudcommunity.com"')
         if status != "OK":
             logger.error(f"Mail search returned '{status}'.")
             return
@@ -45,7 +72,7 @@ class Mail:
         # Messages is an array of one element with all message ids spaced,
         # for example [b"1 2 3 4 5"].
         for message_id in messages[0].split():
-            status, raw_message = self.mail.fetch(message_id, "(RFC822)")
+            status, raw_message = self._wrap_imap_calls(self.mail.fetch, message_id, "(RFC822)")
             if status != "OK":
                 logger.warning(f"Mail fetch for mail '{message_id}' returned '{status}'.")
                 continue
@@ -82,7 +109,7 @@ class Mail:
                 )
                 continue
 
-            self.mail.store(message_id, "+FLAGS", "\\Deleted")
+            self._wrap_imap_calls(self.mail.store, message_id, "+FLAGS", "\\Deleted")
 
             warframe_name = subject.replace(" has sent you a message", "")
             warframe_subject = warframe_message_subject_tags[0].text.strip()
@@ -105,4 +132,4 @@ class Mail:
             except ValueError:
                 logger.info(f"'{subject}' is not an integer.")
 
-        self.mail.expunge()
+        self._wrap_imap_calls(self.mail.expunge)
