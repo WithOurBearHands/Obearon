@@ -21,13 +21,14 @@ class Mail:
     """
 
     def __init__(self):
-        self.mail = imaplib.IMAP4_SSL("imap.gmail.com")
+        self.mail: imaplib.IMAP4_SSL = None
         self.code_regex = re.compile(r"\d{6}")
 
     def login(self) -> None:
         """
         Log in to the mail provider.
         """
+        self.mail = imaplib.IMAP4_SSL("imap.gmail.com")
         self.mail.login(
             user=os.environ["EMAIL_USERNAME"],
             password=os.environ["EMAIL_PASSWORD"],
@@ -53,6 +54,7 @@ class Mail:
             return func(*args, **kwargs)
         except imaplib.IMAP4.abort as abort:
             if _retry:
+                self.mail.logout()
                 logger.warning("Received abort exception, retrying login...")
                 self.login()
                 return self._wrap_imap_calls(func, *args, _retry=False, **kwargs)
