@@ -35,6 +35,18 @@ class Mail:
         )
         self.mail.select("inbox")
 
+    def _safe_reset(self) -> None:
+        """
+        Safely reset the mail session, ignoring logout exceptions.
+        """
+        try:
+            if self.mail is not None:
+                self.mail.logout()
+        except Exception as e:
+            logger.debug(f"Ignored logout error during reset: {e}")
+        finally:
+            self.mail = None
+
     def _wrap_imap_calls(self, func: Callable[..., Any], *args, _retry: bool = True, **kwargs):
         """
         Wraps calls to IMAP in an exception handler. Useful because especially Gmail tends to time out the login
@@ -52,15 +64,15 @@ class Mail:
         """
         try:
             return func(*args, **kwargs)
-        except imaplib.IMAP4.abort as abort:
+        except Exception as e:
             if _retry:
-                self.mail.logout()
                 logger.warning("Received abort exception, retrying login...")
+                self._safe_reset()
                 self.login()
                 return self._wrap_imap_calls(func, *args, _retry=False, **kwargs)
             else:
                 logger.error("Logging in again did not work.")
-                raise abort
+                raise e
 
     async def check_messages(self) -> None:
         """
