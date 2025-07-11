@@ -69,7 +69,8 @@ class Mail:
                 logger.warning("Received abort exception, retrying login...")
                 self._safe_reset()
                 self.login()
-                return self._wrap_imap_calls(func, *args, _retry=False, **kwargs)
+                refreshed_func = getattr(self.mail, func.__name__)
+                return self._wrap_imap_calls(refreshed_func, *args, _retry=False, **kwargs)
             else:
                 logger.error("Logging in again did not work.")
                 raise e
