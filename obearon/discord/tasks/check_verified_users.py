@@ -40,3 +40,4 @@ async def check_for_verified_users(client: discord.Bot, mail: Mail) -> None:
             await crud.remove_verification(discord_user_id=user.discord_user_id)
         except Forbidden:
             logger.info(f"Could not change username or roles of {user.discord_user_id} in {user.discord_guild_id}")
+            await crud.remove_verification(discord_user_id=user.discord_user_id)
