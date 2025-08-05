@@ -14,9 +14,9 @@ class HibernationRole(commands.Cog):
     """
     Cog for Hibernation role commands.
     """
-    def __init__(self, bot):
+    def __init__(self, bot: commands.Bot):
         """
-        Initialize the OutOfThisWorldRole cog.
+        Initialize the HibernationRole cog.
 
         Args:
             bot: The bot to add the cog to.
@@ -34,7 +34,7 @@ class HibernationRole(commands.Cog):
             ctx: The context of the user who executed this command.
             role: The role to store.
         """
-        await crud.set_hibernation_role(guild_id=ctx.guild_id, out_role_id=role.id)
+        await crud.set_hibernation_role(guild_id=ctx.guild_id, hibernation_role_id=role.id)
         await ctx.respond(content=f"**{role.name}** has been set as the hibernation role.", ephemeral=True)
 
     @commands.slash_command()
@@ -52,7 +52,7 @@ class HibernationRole(commands.Cog):
             ephemeral=True,
         )
 
-def setup(bot) -> None:
+def setup(bot: commands.Bot) -> None:
     """
     Setup the hibernation cog. Called by pycord.
 

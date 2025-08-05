@@ -4,8 +4,10 @@ CRUD operations for the database.
 
 from .role import get_friend_role
 from .role import get_verify_role
+from .role import get_hibernation_role
 from .role import set_friend_role
 from .role import set_verify_role
+from .role import set_hibernation_role
 from .verification import create_verification
 from .verification import get_successful_verifications
 from .verification import remove_verification
@@ -20,4 +22,6 @@ __all__ = [
     "get_verify_role",
     "set_friend_role",
     "get_friend_role",
+    "set_hibernation_role",
+    "get_hibernation_role",
 ]

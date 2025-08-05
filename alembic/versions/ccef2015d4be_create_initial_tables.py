@@ -26,6 +26,7 @@ def upgrade() -> None:
         sa.Column("guild_id", sa.BigInteger(), nullable=False),
         sa.Column("verified_role_id", sa.BigInteger(), nullable=True),
         sa.Column("friend_role_id", sa.BigInteger(), nullable=True),
+        sa.Column("hibernation_role_id", sa.BigInteger(), nullable=True),
         sa.PrimaryKeyConstraint("guild_id"),
     )
     op.create_table(
