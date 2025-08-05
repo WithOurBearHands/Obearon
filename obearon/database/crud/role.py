@@ -78,6 +78,7 @@ async def get_friend_role(guild_id: int) -> models.GuildRole | None:
         role_query = await session.execute(select(models.GuildRole).where(models.GuildRole.guild_id == guild_id))
         return role_query.scalars().first()
 
+
 async def set_hibernation_role(guild_id: int, hibernation_role_id: int) -> None:
     """
     Stores the hibernation role to be given.

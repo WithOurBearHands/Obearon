@@ -14,6 +14,7 @@ class HibernationRole(commands.Cog):
     """
     Cog for Hibernation role commands.
     """
+
     def __init__(self, bot: commands.Bot):
         """
         Initialize the HibernationRole cog.
@@ -48,9 +49,11 @@ class HibernationRole(commands.Cog):
         """
         role = await crud.get_hibernation_role(guild_id=ctx.guild_id)
         await ctx.respond(
-            content=(f"<@&{role.hibernation_role_id}>" if role else "No role") + " has been set as the hibernation role.",
+            content=(f"<@&{role.hibernation_role_id}>" if role else "No role")
+            + " has been set as the hibernation role.",
             ephemeral=True,
         )
+
 
 def setup(bot: commands.Bot) -> None:
     """
