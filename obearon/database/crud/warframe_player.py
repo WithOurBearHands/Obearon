@@ -10,7 +10,7 @@ from obearon.database import engine
 from obearon.database import models
 
 
-async def create_verification(oid: int, name: str, platform_names: list, mastery_rank: int) -> None:
+async def create_warframe_player(oid: int, name: str, platform_names: list, mastery_rank: int) -> None:
     """
     Creates a warframe player.
 
