@@ -18,3 +18,4 @@ dist/
 *.env
 data/
 start.sh
+/Questions.txt
