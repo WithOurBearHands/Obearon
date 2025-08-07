@@ -96,7 +96,7 @@ async def set_hibernation_role(guild_id: int, hibernation_role_id: int) -> None:
             return
 
         session.add(models.GuildRole(guild_id=guild_id, hibernation_role_id=hibernation_role_id))
-        logger.info(f"Set Discord role ID {hibernation_role_id} for guild ID {guild_id}.")
+        logger.info(f"Set Discord hibernation role ID {hibernation_role_id} for guild ID {guild_id}.")
 
 
 async def get_hibernation_role(guild_id: int) -> models.GuildRole | None:
