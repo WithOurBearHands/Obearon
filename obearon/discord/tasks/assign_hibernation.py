@@ -28,9 +28,8 @@ async def assign_hibernation(client: discord.Bot) -> None:
     warframe_players = await crud.get_warframe_players()
 
     for member in guild.members:  ## Uses cache, which doesn't update consistently
-        if member.get_role(verify_role.verified_role_id) is guild.get_role(
-            verify_role.verified_role_id
-        ):  # Confused about this warning
+        if not member.get_role(verify_role.verified_role_id):
+          continue
             ## Exclude new users in the server
             if not member.joined_at > datetime.now(timezone.utc) - timedelta(hours=24):
                 if not any(warframe_name.name == member.nick for warframe_name in warframe_players):
