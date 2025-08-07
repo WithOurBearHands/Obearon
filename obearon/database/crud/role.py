@@ -92,7 +92,7 @@ async def set_hibernation_role(guild_id: int, hibernation_role_id: int) -> None:
         role = role_query.scalars().first()
         if role is not None:
             role.hibernation_role_id = hibernation_role_id
-            logger.info(f"Updated {guild_id} with new role ID {hibernation_role_id}.")
+            logger.info(f"Updated {guild_id} with new hibernation role ID {hibernation_role_id}.")
             return
 
         session.add(models.GuildRole(guild_id=guild_id, hibernation_role_id=hibernation_role_id))
