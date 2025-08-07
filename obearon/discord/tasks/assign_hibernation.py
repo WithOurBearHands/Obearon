@@ -29,20 +29,20 @@ async def assign_hibernation(client: discord.Bot) -> None:
 
     for member in guild.members:  ## Uses cache, which doesn't update consistently
         if not member.get_role(verify_role.verified_role_id):
-          continue
-            ## Exclude new users in the server
-            joined_recently = datetime.now(timezone.utc) - member.joined_at < timedelta(hours=24)
-              if joined_recently:
-                  continue
-                if not any(warframe_name.name == member.nick for warframe_name in warframe_players):
-                    try:
-                        await member.remove_roles(guild.get_role(verify_role.verified_role_id))
-                        await member.add_roles(guild.get_role(hibernation_role.hibernation_role_id))
-                        logger.info(
-                            f"User {member.id} role update, removed {verify_role.verified_role_id} "
-                            f"added {hibernation_role.hibernation_role_id}"
-                        )
-                    except Forbidden:
-                        logger.info(
-                            f"Failed to updates roles of {member.id} in " f"{guild.id} during 'assign hibernation'."
-                        )
+           continue
+        joined_recently = datetime.now(timezone.utc) - member.joined_at < timedelta(hours=24)
+        if joined_recently:
+            continue
+        if any(warframe_name.name == member.nick for warframe_name in warframe_players):
+            continue
+        try:
+            await member.remove_roles(guild.get_role(verify_role.verified_role_id))
+            await member.add_roles(guild.get_role(hibernation_role.hibernation_role_id))
+            logger.info(
+                f"User {member.id} role update, removed {verify_role.verified_role_id} "
+                f"added {hibernation_role.hibernation_role_id}"
+            )
+        except Forbidden:
+            logger.info(
+                f"Failed to updates roles of {member.id} in " f"{guild.id} during 'assign hibernation'."
+            )
