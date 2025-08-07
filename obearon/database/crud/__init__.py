@@ -8,12 +8,17 @@ from .giveaway import get_giveaway_participants
 from .giveaway import remove_giveaway_participant
 from .role import get_friend_role
 from .role import get_verify_role
+from .role import get_hibernation_role
 from .role import set_friend_role
 from .role import set_verify_role
+from .role import set_hibernation_role
 from .verification import create_verification
 from .verification import get_successful_verifications
 from .verification import remove_verification
 from .verification import update_warframe_name
+from .warframe_player import get_warframe_players_name
+from .warframe_player import get_warframe_players
+from .warframe_player import create_warframe_player
 
 __all__ = [
     "create_verification",
@@ -34,3 +39,4 @@ __all__ = [
     "get_giveaway_participants",
     "remove_giveaway_participant",
 ]
+
