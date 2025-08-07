@@ -18,5 +18,5 @@ class WarframePlayer(Base):
 
     oid: Mapped[int] = mapped_column(BigInteger, primary_key=True)
     name: Mapped[str] = mapped_column(String(24))
-    platform_names: Mapped[list] = mapped_column(JSON)
+    platform_names: Mapped[list[str]] = mapped_column(JSON)
     mastery_rank: Mapped[int] = mapped_column(Integer)
