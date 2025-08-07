@@ -28,7 +28,8 @@ class Mail:
         """
         Log in to the mail provider.
         """
-        self.mail = imaplib.IMAP4_SSL("mail.mailo.com")  # mailo for Soda
+        self.mail = imaplib.IMAP4_SSL("imap.gmail.com")
+        #self.mail = imaplib.IMAP4_SSL("mail.mailo.com")  # mailo for Soda
         self.mail.login(
             user=os.environ["EMAIL_USERNAME"],
             password=os.environ["EMAIL_PASSWORD"],
