@@ -42,3 +42,16 @@ async def get_warframe_players() -> list[models.WarframePlayer]:
     async with engine.async_session() as session, session.begin():
         warframe_players_query = await session.execute(select(models.WarframePlayer))
         return warframe_players_query.scalars().all()
+
+
+async def get_warframe_players_name() -> list[str]:
+    """
+    Get all player names.
+
+    Returns:
+        A list of names.
+    """
+
+    async with engine.async_session() as session, session.begin():
+        names = await session.execute(select(models.WarframePlayer.name))
+        return [row[0] for row in names.all()]

@@ -25,15 +25,15 @@ async def assign_hibernation(client: discord.Bot) -> None:
     guild = client.get_guild(guild_id)
     verify_role = await crud.get_verify_role(guild_id)
     hibernation_role = await crud.get_hibernation_role(guild_id)
-    warframe_players = await crud.get_warframe_players()
+    warframe_players = await crud.get_warframe_players_name()
 
     for member in guild.members:  ## Uses cache, which doesn't update consistently
         if not member.get_role(verify_role.verified_role_id):
-           continue
+            continue
         joined_recently = datetime.now(timezone.utc) - member.joined_at < timedelta(hours=24)
         if joined_recently:
             continue
-        if any(warframe_name.name == member.nick for warframe_name in warframe_players):
+        if any(name == member.nick for name in warframe_players):
             continue
         try:
             await member.remove_roles(guild.get_role(verify_role.verified_role_id))
@@ -43,6 +43,4 @@ async def assign_hibernation(client: discord.Bot) -> None:
                 f"added {hibernation_role.hibernation_role_id}"
             )
         except Forbidden:
-            logger.info(
-                f"Failed to updates roles of {member.id} in " f"{guild.id} during 'assign hibernation'."
-            )
+            logger.info(f"Failed to updates roles of {member.id} in " f"{guild.id} during 'assign hibernation'.")
