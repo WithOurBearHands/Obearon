@@ -31,7 +31,9 @@ async def assign_hibernation(client: discord.Bot) -> None:
         if not member.get_role(verify_role.verified_role_id):
           continue
             ## Exclude new users in the server
-            if not member.joined_at > datetime.now(timezone.utc) - timedelta(hours=24):
+            joined_recently = datetime.now(timezone.utc) - member.joined_at < timedelta(hours=24)
+              if joined_recently:
+                  continue
                 if not any(warframe_name.name == member.nick for warframe_name in warframe_players):
                     try:
                         await member.remove_roles(guild.get_role(verify_role.verified_role_id))
