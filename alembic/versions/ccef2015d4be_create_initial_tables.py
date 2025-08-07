@@ -26,7 +26,6 @@ def upgrade() -> None:
         sa.Column("guild_id", sa.BigInteger(), nullable=False),
         sa.Column("verified_role_id", sa.BigInteger(), nullable=True),
         sa.Column("friend_role_id", sa.BigInteger(), nullable=True),
-        sa.Column("hibernation_role_id", sa.BigInteger(), nullable=True),
         sa.PrimaryKeyConstraint("guild_id"),
     )
     op.create_table(
@@ -38,18 +37,9 @@ def upgrade() -> None:
         sa.Column("verified", sa.Boolean(), server_default="false", nullable=False),
         sa.PrimaryKeyConstraint("discord_guild_id", "discord_user_id"),
     )
-    op.create_table(
-        "warframe_player",
-        sa.Column("oid", sa.BigInteger(), nullable=False),
-        sa.Column("name", sa.String(length=24), nullable=False),
-        sa.Column("platform_names", sa.JSON(), nullable=True),
-        sa.Column("mastery_rank", sa.Integer(), nullable=False),
-        sa.PrimaryKeyConstraint("oid"),
-    )
 
 
 def downgrade() -> None:
     """Downgrade schema."""
-    op.drop_table("warframe_player")
     op.drop_table("verification")
     op.drop_table("guild_role")

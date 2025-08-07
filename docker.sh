@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source venv/Scripts/activate
+source venv/bin/activate
 
 alembic upgrade head || exit 1
 python3 -u main.py

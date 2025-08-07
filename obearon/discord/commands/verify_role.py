@@ -37,7 +37,10 @@ class VerifyRole(commands.Cog):
             role: The role to store.
         """
         await crud.set_verify_role(guild_id=ctx.guild_id, verified_role_id=role.id)
-        await ctx.respond(content=f"**{role.name}** has been set as the verified role.", ephemeral=True)
+        await ctx.respond(
+            content=f"**{role.name}** has been set as the verified role.",
+            ephemeral=True,
+        )
 
     @commands.slash_command()
     @default_permissions(manage_roles=True)

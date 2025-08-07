@@ -25,12 +25,7 @@ async def check_for_verified_users(client: discord.Bot, mail: Mail) -> None:
     for user in await crud.get_successful_verifications():
         guild = client.get_guild(user.discord_guild_id)
         verified_role = await crud.get_verify_role(user.discord_guild_id)
-        try:
-            member = await guild.fetch_member(user.discord_user_id)
-        except discord.errors.NotFound:
-            logger.info(f"{user.discord_user_id} has left the server. Removing verification.")
-            await crud.remove_verification(user.discord_user_id)
-            return
+        member = await guild.fetch_member(user.discord_user_id)
         try:
             await member.edit(nick=user.warframe_name)
             logger.info(f"Updated username of {user.discord_user_id} to {user.warframe_name}")
@@ -40,4 +35,3 @@ async def check_for_verified_users(client: discord.Bot, mail: Mail) -> None:
             await crud.remove_verification(discord_user_id=user.discord_user_id)
         except Forbidden:
             logger.info(f"Could not change username or roles of {user.discord_user_id} in {user.discord_guild_id}")
-            await crud.remove_verification(discord_user_id=user.discord_user_id)

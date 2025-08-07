@@ -1,36 +1,27 @@
-[build-system]
-requires = ["setuptools >= 75.0"]
-build-backend = "setuptools.build_meta"
-
 [project]
 name = "obearon"
-version = "0.0.1"
-authors = [
-  {name = "akshualy"}
-]
-description = "Warframe to Discord linking tool."
+version = "0.1.0"
+description = "A Discord bot for the With Our Bear Hands clan"
 readme = "README.md"
-requires-python = ">= 3.12"
+requires-python = ">=3.12"
 dependencies = [
-    "black==25.1.0",
-    "flake8==7.1.1",
-    "isort==6.0.0",
-    "pylint==3.3.4",
-    "py-cord==2.6.1",
-    "python-dotenv==1.0.1",
-    "SQLAlchemy==2.0.37",
-    "aiosqlite==0.21.0",
-    "loguru==0.7.3",
-    "beautifulsoup4==4.13.3",
-    "alembic==1.15.2",
+    "aiosqlite>=0.21.0",
+    "alembic>=1.16.1",
+    "beautifulsoup4>=4.13.4",
+    "dateparser>=1.2.1",
+    "loguru>=0.7.3",
+    "py-cord>=2.6.1",
+    "python-dotenv>=1.1.0",
+    "sqlalchemy>=2.0.41",
 ]
 
-[project.urls]
-Repository = "https://github.com/akshualy/Obearon.git"
-"Bug Tracker" = "https://github.com/akshualy/Obearon/issues"
-
-[tool.setuptools]
-py-modules = ["obearon"]
+[dependency-groups]
+dev = [
+    "black>=25.1.0",
+    "flake8>=7.2.0",
+    "isort>=6.0.1",
+    "pylint>=3.3.7",
+]
 
 [tool.black]
 line-length = 120
