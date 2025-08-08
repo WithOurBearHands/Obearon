@@ -3,27 +3,37 @@ CRUD operations for the warframe_player table.
 """
 
 from loguru import logger
-from sqlalchemy import delete
 from sqlalchemy import select
-from sqlalchemy import insert
+from sqlalchemy import update
+from sqlalchemy.dialects.postgresql import insert
 
 from obearon.database import engine
 from obearon.database import models
 
 
-async def create_update_warframe_players (players: list[dict]) -> None:
+async def create_update_warframe_players(players: list[dict]):
     """
     Bulk operation to process a list of WarframePlayer model objects.
 
     Args:
-        ???
+        players: list of dicts, should contain oid, names[list], mastery_rank
     """
+    player_oids = [player["oid"] for player in players]
     async with engine.async_session() as session, session.begin():
-        session.execute(
-            insert(warframe_player)
+        for player in players:
+            upsert = (
+                insert(models.WarframePlayer)
+                .values(**player)
+                .on_conflict_do_update(
+                    index_elements=["oid"], set_={"names": player["names"], "mastery_rank": player["mastery_rank"]}
+                )
+            )
+            await session.execute(upsert)
+        out_of_clan = (
+            update(models.WarframePlayer).where(models.WarframePlayer.oid.not_in(player_oids)).values(in_clan=False)
         )
-
-
+        await session.execute(out_of_clan)
+    logger.info("Updated warframe_players table.")
 
 
 async def get_warframe_players() -> list[models.WarframePlayer]:

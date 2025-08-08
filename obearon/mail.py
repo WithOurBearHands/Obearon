@@ -6,10 +6,10 @@ import email
 from email.header import decode_header
 import imaplib
 import os
+import re
 
 from bs4 import BeautifulSoup
 from loguru import logger
-import re
 
 from obearon.database import crud
 

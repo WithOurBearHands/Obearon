@@ -1,9 +1,9 @@
 """
 Upload clan inventory command.
 """
-import json
-from sqlalchemy.exc import SQLAlchemyError
+
 from http.client import HTTPException
+import json
 from json import JSONDecodeError
 
 import discord
@@ -11,6 +11,7 @@ from discord.commands import default_permissions
 from discord.commands import option
 from discord.ext import commands
 import loguru as logger
+from sqlalchemy.exc import SQLAlchemyError
 
 from obearon.database import crud
 
@@ -48,14 +49,10 @@ class UploadClanInventory(commands.cog):
                 file_content = await file.read()
                 bytes_to_string = file_content.decode("utf-8")
                 parsed_json = json.loads(bytes_to_string)
-                for member in parsed_json['Member']:
-                    all_names = [member['DisplayName']]
-                    all_names.extend(member.get('PlatformNames', []))
-                    player_dict = {
-                        "oid": member['oid'],
-                        "names": all_names,
-                        "mastery_rank": member['PlayerLevel']
-                                   }
+                for member in parsed_json["Member"]:
+                    all_names = [member["DisplayName"]]
+                    all_names.extend(member.get("PlatformNames", []))
+                    player_dict = {"oid": member["oid"], "names": all_names, "mastery_rank": member["PlayerLevel"]}
                     player_list.append(player_dict)
             except (discord.NotFound, HTTPException, JSONDecodeError) as exception:
                 logger.info(f"Failed to parse file.\n {exception}")
@@ -65,10 +62,3 @@ class UploadClanInventory(commands.cog):
 
             except SQLAlchemyError as ex:
                 logger.info(f"Database update failed.\n {ex}")
-
-
-
-
-
-
-
