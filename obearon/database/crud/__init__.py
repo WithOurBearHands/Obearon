@@ -39,4 +39,3 @@ __all__ = [
     "get_giveaway_participants",
     "remove_giveaway_participant",
 ]
-

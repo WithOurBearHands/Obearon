@@ -2,6 +2,8 @@
 Warframe player model.
 """
 
+from xmlrpc.client import Boolean
+
 from sqlalchemy import BigInteger, Integer, String, JSON
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
@@ -16,7 +18,8 @@ class WarframePlayer(Base):
 
     __tablename__ = "warframe_player"
 
-    oid: Mapped[int] = mapped_column(BigInteger, primary_key=True)
-    name: Mapped[str] = mapped_column(String(24))
-    platform_names: Mapped[list[str]] = mapped_column(JSON)
-    mastery_rank: Mapped[int] = mapped_column(Integer)
+    oid: Mapped[str] = mapped_column(String, nullable=False, primary_key=True)
+    names: Mapped[list[str]] = mapped_column(JSON, nullable=False)
+    mastery_rank: Mapped[int] = mapped_column(Integer, nullable=False)
+    in_clan: Mapped[bool] = mapped_column(default=True, nullable=False)
+    blacklisted: Mapped[bool] = mapped_column(default=False, nullable=False)
