@@ -20,7 +20,7 @@ class Mail:
     """
 
     def __init__(self):
-        self.mail = imaplib.IMAP4_SSL("imap.gmail.com")
+        self.mail = imaplib.IMAP4_SSL(os.environ["EMAIL_IMAP_URL"])
         self.code_regex = re.compile(r"\d{6}")
 
     def login(self) -> None:
