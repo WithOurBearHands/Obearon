@@ -18,7 +18,7 @@ class WarframePlayer(Base):
 
     __tablename__ = "warframe_player"
 
-    oid: Mapped[str] = mapped_column(String, nullable=False, primary_key=True)
+    oid: Mapped[str] = mapped_column(String, unique=True, nullable=False, primary_key=True)
     names: Mapped[list[str]] = mapped_column(JSON, nullable=False)
     mastery_rank: Mapped[int] = mapped_column(Integer, nullable=False)
     in_clan: Mapped[bool] = mapped_column(default=True, nullable=False)

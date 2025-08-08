@@ -2,6 +2,7 @@
 Upload clan inventory command.
 """
 import json
+from sqlalchemy.exc import SQLAlchemyError
 from http.client import HTTPException
 from json import JSONDecodeError
 
@@ -10,7 +11,6 @@ from discord.commands import default_permissions
 from discord.commands import option
 from discord.ext import commands
 import loguru as logger
-from obearon.database import models
 
 from obearon.database import crud
 
@@ -40,6 +40,7 @@ class UploadClanInventory(commands.cog):
                 ctx: The context of the user who executed this command.
                 file: .JSON file containing clan inventory.
             """
+            player_list = []
             if not file.filename.lower().endswith(".json"):
                 await ctx.respond(f"Can only accept '.JSON' files.", ephemeral=True)
                 return
@@ -50,16 +51,21 @@ class UploadClanInventory(commands.cog):
                 for member in parsed_json['Member']:
                     all_names = [member['DisplayName']]
                     all_names.extend(member.get('PlatformNames', []))
-                    warframe_player_object = models.WarframePlayer(
-                        oid=member['oid'],
-                        names=all_names,
-                        mastery_rank=member['PlayerLevel']
-                    )
-
-
-
+                    player_dict = {
+                        "oid": member['oid'],
+                        "names": all_names,
+                        "mastery_rank": member['PlayerLevel']
+                                   }
+                    player_list.append(player_dict)
             except (discord.NotFound, HTTPException, JSONDecodeError) as exception:
-                logger.info(f"Failed to parse file into model objects.\n {exception}")
+                logger.info(f"Failed to parse file.\n {exception}")
+                return
+            try:
+                await crud.create_update_warframe_players(player_list)
+
+            except SQLAlchemyError as ex:
+                logger.info(f"Database update failed.\n {ex}")
+
 
 
 

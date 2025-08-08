@@ -5,28 +5,25 @@ CRUD operations for the warframe_player table.
 from loguru import logger
 from sqlalchemy import delete
 from sqlalchemy import select
+from sqlalchemy import insert
 
 from obearon.database import engine
 from obearon.database import models
 
 
-async def create_warframe_player(oid: str, names: list[str], mastery_rank: int) -> None:
+async def create_update_warframe_players (players: list[dict]) -> None:
     """
-    Creates a warframe player.
+    Bulk operation to process a list of WarframePlayer model objects.
 
     Args:
-        oid: Unique Warframe player ID.
-        names: Primary name of player.
-        mastery_rank: Players ingame rank.
+        ???
     """
     async with engine.async_session() as session, session.begin():
-        session.add(
-            models.WarframePlayer(
-                oid=oid,
-                names=names,
-                mastery_rank=mastery_rank,
-            )
+        session.execute(
+            insert(warframe_player)
         )
+
+
 
 
 async def get_warframe_players() -> list[models.WarframePlayer]:
@@ -53,3 +50,22 @@ async def get_warframe_players_name() -> list[str]:
     async with engine.async_session() as session, session.begin():
         names = await session.execute(select(models.WarframePlayer.names))
         return [row[0] for row in names.all()]
+
+
+async def create_warframe_player(oid: str, names: list[str], mastery_rank: int) -> None:
+    """
+    Creates a warframe player.
+
+    Args:
+        oid: Unique Warframe player ID.
+        names: Primary name of player.
+        mastery_rank: Players ingame rank.
+    """
+    async with engine.async_session() as session, session.begin():
+        session.add(
+            models.WarframePlayer(
+                oid=oid,
+                names=names,
+                mastery_rank=mastery_rank,
+            )
+        )
