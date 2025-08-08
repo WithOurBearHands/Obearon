@@ -77,3 +77,38 @@ async def get_friend_role(guild_id: int) -> models.GuildRole | None:
     async with engine.async_session() as session, session.begin():
         role_query = await session.execute(select(models.GuildRole).where(models.GuildRole.guild_id == guild_id))
         return role_query.scalars().first()
+
+
+async def set_hibernation_role(guild_id: int, hibernation_role_id: int) -> None:
+    """
+    Stores the hibernation role to be given.
+
+    Args:
+        guild_id: The guild ID in which to give the role.
+        hibernation_role_id: The ID of the role to be given.
+    """
+    async with engine.async_session() as session, session.begin():
+        role_query = await session.execute(select(models.GuildRole).where(models.GuildRole.guild_id == guild_id))
+        role = role_query.scalars().first()
+        if role is not None:
+            role.hibernation_role_id = hibernation_role_id
+            logger.info(f"Updated {guild_id} with new hibernation role ID {hibernation_role_id}.")
+            return
+
+        session.add(models.GuildRole(guild_id=guild_id, hibernation_role_id=hibernation_role_id))
+        logger.info(f"Set Discord hibernation role ID {hibernation_role_id} for guild ID {guild_id}.")
+
+
+async def get_hibernation_role(guild_id: int) -> models.GuildRole | None:
+    """
+    Get the hibernation role ID or none if none is set.
+
+    Args:
+        guild_id: The Discord guild ID to search for.
+
+    Returns:
+        A GuildRole instance or None if no information exists.
+    """
+    async with engine.async_session() as session, session.begin():
+        role_query = await session.execute(select(models.GuildRole).where(models.GuildRole.guild_id == guild_id))
+        return role_query.scalars().first()

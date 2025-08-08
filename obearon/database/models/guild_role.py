@@ -19,3 +19,4 @@ class GuildRole(Base):
     guild_id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
     verified_role_id: Mapped[int | None] = mapped_column(BigInteger)
     friend_role_id: Mapped[int | None] = mapped_column(BigInteger)
+    hibernation_role_id: Mapped[int | None] = mapped_column(BigInteger)
