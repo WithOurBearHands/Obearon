@@ -7,6 +7,7 @@ from email.header import decode_header
 import imaplib
 import os
 import re
+
 from typing import Any, Callable
 
 from bs4 import BeautifulSoup
