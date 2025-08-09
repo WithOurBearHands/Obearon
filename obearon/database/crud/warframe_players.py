@@ -11,7 +11,7 @@ from obearon.database import engine
 from obearon.database import models
 
 
-async def create_update_warframe_players(players: list[dict]):
+async def create_update_warframe_players(players: list[dict]): ## TODO: fix
     """
     Bulk operation to process a list of WarframePlayer model objects.
 
@@ -22,7 +22,7 @@ async def create_update_warframe_players(players: list[dict]):
     async with engine.async_session() as session, session.begin():
         for player in players:
             upsert = (
-                insert(models.WarframePlayer)
+                insert(models.WarframePlayers)
                 .values(**player)
                 .on_conflict_do_update(
                     index_elements=["oid"], set_={"names": player["names"], "mastery_rank": player["mastery_rank"]}
@@ -30,13 +30,13 @@ async def create_update_warframe_players(players: list[dict]):
             )
             await session.execute(upsert)
         out_of_clan = (
-            update(models.WarframePlayer).where(models.WarframePlayer.oid.not_in(player_oids)).values(in_clan=False)
+            update(models.WarframePlayers).where(models.WarframePlayers.oid.not_in(player_oids)).values(in_clan=False)
         )
         await session.execute(out_of_clan)
     logger.info("Updated warframe_players table.")
 
 
-async def get_warframe_players() -> list[models.WarframePlayer]:
+async def get_warframe_players() -> list[models.WarframePlayers]:
     """
     Get all warframe players.
 
@@ -45,11 +45,11 @@ async def get_warframe_players() -> list[models.WarframePlayer]:
     """
 
     async with engine.async_session() as session, session.begin():
-        warframe_players_query = await session.execute(select(models.WarframePlayer))
+        warframe_players_query = await session.execute(select(models.WarframePlayers))
         return warframe_players_query.scalars().all()
 
 
-async def get_warframe_players_name() -> list[str]:
+async def get_warframe_players_name() -> list[str]: ## TODO: fix
     """
     Get all player names.
 
@@ -58,7 +58,7 @@ async def get_warframe_players_name() -> list[str]:
     """
 
     async with engine.async_session() as session, session.begin():
-        names = await session.execute(select(models.WarframePlayer.names))
+        names = await session.execute(select(models.WarframePlayers.name))
         return [row[0] for row in names.all()]
 
 
@@ -73,7 +73,7 @@ async def create_warframe_player(oid: str, names: list[str], mastery_rank: int) 
     """
     async with engine.async_session() as session, session.begin():
         session.add(
-            models.WarframePlayer(
+            models.WarframePlayers(
                 oid=oid,
                 names=names,
                 mastery_rank=mastery_rank,
