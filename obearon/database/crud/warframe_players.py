@@ -11,12 +11,13 @@ from obearon.database import engine
 from obearon.database import models
 
 
-async def create_update_warframe_players(players: list[dict]): ## TODO: fix
+async def create_update_warframe_players(players: list[dict], player_names: list[dict]):
     """
-    Bulk operation to process a list of WarframePlayer model objects.
+    Bulk operation to process Warframe Players and Warframe Player Names.
 
     Args:
-        players: list of dicts, should contain oid, names[list], mastery_rank
+        players: list of dicts, contains oid, mastery_rank
+        player_names: list of dicts, contains oid, name, platform
     """
     player_oids = [player["oid"] for player in players]
     async with engine.async_session() as session, session.begin():
@@ -25,14 +26,25 @@ async def create_update_warframe_players(players: list[dict]): ## TODO: fix
                 insert(models.WarframePlayers)
                 .values(**player)
                 .on_conflict_do_update(
-                    index_elements=["oid"], set_={"names": player["names"], "mastery_rank": player["mastery_rank"]}
+                    index_elements=["oid"], set_={"mastery_rank": player["mastery_rank"]}
                 )
             )
-            await session.execute(upsert)
+            await session.e(upsert)
         out_of_clan = (
             update(models.WarframePlayers).where(models.WarframePlayers.oid.not_in(player_oids)).values(in_clan=False)
         )
-        await session.execute(out_of_clan)
+        await session.add(out_of_clan)
+        for name in player_names:
+            name_insert = (
+                insert(models.WarframePlayerNames)
+                .values(**name)
+                .on_conflict_do_nothing(
+                    index_elements=["oid", "name", "platform"]
+                )
+            )
+            await session.add(name_insert)
+
+        await session.commit()
     logger.info("Updated warframe_players table.")
 
 
@@ -49,7 +61,7 @@ async def get_warframe_players() -> list[models.WarframePlayers]:
         return warframe_players_query.scalars().all()
 
 
-async def get_warframe_players_name() -> list[str]: ## TODO: fix
+async def get_warframe_player_names() -> list[str]:
     """
     Get all player names.
 
@@ -58,24 +70,23 @@ async def get_warframe_players_name() -> list[str]: ## TODO: fix
     """
 
     async with engine.async_session() as session, session.begin():
-        names = await session.execute(select(models.WarframePlayers.name))
+        names = await session.execute(select(models.WarframePlayerNames.name))
         return [row[0] for row in names.all()]
 
-
-async def create_warframe_player(oid: str, names: list[str], mastery_rank: int) -> None:
+async def get_warframe_play_names_not_in_clan() -> list[str]:
     """
-    Creates a warframe player.
+    Get all player names of players not in clan.
 
-    Args:
-        oid: Unique Warframe player ID.
-        names: Primary name of player.
-        mastery_rank: Players ingame rank.
+    Returns:
+        A list of names.
     """
+    fetch_names = (
+        select(models.WarframePlayerNames.name)
+        .join(models.WarframePlayers, models.WarframePlayerNames.oid == models.WarframePlayers.oid)
+        .where(models.WarframePlayers.in_clan == False)
+    )
+
     async with engine.async_session() as session, session.begin():
-        session.add(
-            models.WarframePlayers(
-                oid=oid,
-                names=names,
-                mastery_rank=mastery_rank,
-            )
-        )
+        names = await session.execute(fetch_names)
+        return [row[0] for row in names.all()]
+

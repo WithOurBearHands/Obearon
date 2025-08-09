@@ -17,9 +17,8 @@ from .verification import get_successful_verifications
 from .verification import remove_verification
 from .verification import update_warframe_name
 from .warframe_players import create_update_warframe_players
-from .warframe_players import create_warframe_player
 from .warframe_players import get_warframe_players
-from .warframe_players import get_warframe_players_name
+from .warframe_players import get_warframe_player_names
 
 __all__ = [
     "create_verification",
@@ -33,9 +32,8 @@ __all__ = [
     "set_hibernation_role",
     "get_hibernation_role",
     "create_update_warframe_players",
-    "create_warframe_player",
     "get_warframe_players",
-    "get_warframe_players_name",
+    "get_warframe_player_names",
     "create_giveaway",
     "add_giveaway_participant",
     "get_giveaway_participants",
