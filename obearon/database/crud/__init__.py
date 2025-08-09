@@ -17,8 +17,8 @@ from .verification import get_successful_verifications
 from .verification import remove_verification
 from .verification import update_warframe_name
 from .warframe_players import create_update_warframe_players
-from .warframe_players import get_warframe_players
 from .warframe_players import get_warframe_player_names
+from .warframe_players import get_warframe_players
 
 __all__ = [
     "create_verification",
