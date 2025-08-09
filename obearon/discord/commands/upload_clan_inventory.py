@@ -5,6 +5,7 @@ Upload clan inventory command.
 from http.client import HTTPException
 import json
 from json import JSONDecodeError
+import re
 
 import discord
 from discord.commands import default_permissions
@@ -26,7 +27,7 @@ class UploadClanInventory(commands.Cog):
         Initialize the upload clan inventory cog.
 
         Args:
-            Client: The client to add the cog to.
+            client: The client to add the cog to.
         """
         self.client = client
 
@@ -41,8 +42,19 @@ class UploadClanInventory(commands.Cog):
             ctx: The context of the user who executed this command.
             file: .JSON file containing clan inventory.
         """
+        await ctx.defer(ephemeral=True, invisible=False)
         player_list = []
         player_name_list = []
+        platform_dict = {
+            "\ue000": "pc",
+            "\ue001": "xbox",
+            "\ue002": "playstation",
+            "\ue003": "nintendo",
+            "\ue004": "ios",
+            "\ue005": "unk005",
+            "\ue006": "unk006",
+            "\ue007": "unk007",
+        }
         if not file.filename.lower().endswith(".json"):
             await ctx.respond("Can only accept '.JSON' files.", ephemeral=True)
             return
@@ -54,13 +66,14 @@ class UploadClanInventory(commands.Cog):
                 all_names = [member["DisplayName"]]
                 all_names.extend(member.get("PlatformNames", []))
                 for name in all_names:
-                    seperator = name.find("\\")
-                    if seperator == -1:
+                    match = re.match(r"(.*?)([\ue000-\uefff])$", name)
+                    if match:
+                        player_name = match.group(1)
+                        platform_code = match.group(2)
+                        platform = platform_dict.get(platform_code, "unknown")
+                    else:
                         player_name = name
                         platform = "unknown"
-                    else:
-                        player_name = name[:seperator]
-                        platform = name[seperator:]
                     player_dict = {"oid": member["_id"]["$oid"], "name": player_name, "platform": platform}
                     player_name_list.append(player_dict)
             for member in parsed_json["Members"]:

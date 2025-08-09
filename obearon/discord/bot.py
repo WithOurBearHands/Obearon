@@ -7,6 +7,7 @@ import os
 import discord
 from loguru import logger
 
+from obearon.discord.events.assign_hibernation import on_application_command_completion
 from obearon.discord.views.verify import VerifyView
 
 client = discord.Bot()
@@ -19,6 +20,7 @@ async def on_ready() -> None:
     Triggered when pycord reports the bot as fully loaded.
     """
     client.add_view(VerifyView())
+    client.add_listener(on_application_command_completion, "on_application_command_completion")
     # check_for_verified_users.start(client=client, mail=mail)
     logger.info(f"{client.user} is ready.")
 

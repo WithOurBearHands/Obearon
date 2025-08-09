@@ -5,18 +5,13 @@ Assign hibernation to users out of clan task.
 from datetime import datetime
 from datetime import timedelta
 from datetime import timezone
-import os
 
-import discord
 from discord import Forbidden
 from loguru import logger
 
 from obearon.database import crud
 
-client = discord.Bot()
 
-
-@client.event
 async def on_application_command_completion(ctx) -> None:
     """
     Assign hibernation role to users not in clan that have verified role.
@@ -25,19 +20,19 @@ async def on_application_command_completion(ctx) -> None:
         ctx: Context of completed commands.
     """
     if ctx.command.name == "upload_clan_inventory":
-        guild_id = int(os.environ["DISCORD_GUILD_ID"])
-        guild = client.get_guild(guild_id)
+        guild_id = ctx.guild.id
+        guild = ctx.guild
         verified_role = await crud.get_verify_role(guild_id)
         hibernation_role = await crud.get_hibernation_role(guild_id)
-        warframe_players = await crud.get_warframe_player_names()
+        warframe_players = await crud.get_warframe_player_names_not_in_clan()
 
-        for member in guild.members:  ## Uses cache, which doesn't update consistently
+        for member in guild.members:
             if not member.get_role(verified_role.verified_role_id):
                 continue
             joined_recently = datetime.now(timezone.utc) - member.joined_at < timedelta(hours=24)
             if joined_recently:
                 continue
-            if any(name == member.nick for name in warframe_players):
+            if not any(name.lower() == member.nick.lower() for name in warframe_players):
                 continue
             try:
                 await member.remove_roles(guild.get_role(verified_role.verified_role_id))

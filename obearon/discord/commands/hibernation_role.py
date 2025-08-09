@@ -47,6 +47,7 @@ class HibernationRole(commands.Cog):
         Args:
             ctx: The context of the user who executed this command.
         """
+
         role = await crud.get_hibernation_role(guild_id=ctx.guild_id)
         await ctx.respond(
             content=(f"<@&{role.hibernation_role_id}>" if role else "No role")

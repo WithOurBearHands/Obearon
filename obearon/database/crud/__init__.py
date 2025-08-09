@@ -18,6 +18,7 @@ from .verification import remove_verification
 from .verification import update_warframe_name
 from .warframe_players import create_update_warframe_players
 from .warframe_players import get_warframe_player_names
+from .warframe_players import get_warframe_player_names_not_in_clan
 from .warframe_players import get_warframe_players
 
 __all__ = [
@@ -34,6 +35,7 @@ __all__ = [
     "create_update_warframe_players",
     "get_warframe_players",
     "get_warframe_player_names",
+    "get_warframe_player_names_not_in_clan",
     "create_giveaway",
     "add_giveaway_participant",
     "get_giveaway_participants",
