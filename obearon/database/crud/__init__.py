@@ -16,10 +16,10 @@ from .verification import create_verification
 from .verification import get_successful_verifications
 from .verification import remove_verification
 from .verification import update_warframe_name
-from .warframe_player import create_update_warframe_players
-from .warframe_player import create_warframe_player
-from .warframe_player import get_warframe_players
-from .warframe_player import get_warframe_players_name
+from .warframe_players import create_update_warframe_players
+from .warframe_players import create_warframe_player
+from .warframe_players import get_warframe_players
+from .warframe_players import get_warframe_players_name
 
 __all__ = [
     "create_verification",
