@@ -20,7 +20,10 @@ async def create_update_warframe_players(players: list[dict], player_names: list
         player_names: list of dicts, contains oid, name, platform
     """
     player_oids = [player["oid"] for player in players]
+
     async with engine.async_session() as session, session.begin():
+        out_of_clan = update(models.WarframePlayers).values(in_clan=False)
+        await session.execute(out_of_clan)
         for player in players:
             upsert = (
                 insert(models.WarframePlayers)
@@ -30,10 +33,7 @@ async def create_update_warframe_players(players: list[dict], player_names: list
                 )
             )
             await session.execute(upsert)
-        out_of_clan = (
-            update(models.WarframePlayers).where(models.WarframePlayers.oid.not_in(player_oids)).values(in_clan=False)
-        )
-        await session.execute(out_of_clan)
+
         for name in player_names:
             name_insert = (
                 insert(models.WarframePlayerNames)
@@ -69,7 +69,7 @@ async def get_warframe_player_names() -> list[str]:
 
     async with engine.async_session() as session, session.begin():
         names = await session.execute(select(models.WarframePlayerNames.name))
-        return [row[0] for row in names.all()]
+        return names.scalars().all()
 
 
 async def get_warframe_player_names_not_in_clan() -> list[str]:
@@ -86,4 +86,4 @@ async def get_warframe_player_names_not_in_clan() -> list[str]:
     )
     async with engine.async_session() as session, session.begin():
         names = await session.execute(fetch_names)
-        return [row[0] for row in names.all()]
+        return names.scalars().all()

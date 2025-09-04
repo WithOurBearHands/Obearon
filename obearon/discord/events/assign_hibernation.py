@@ -32,7 +32,7 @@ async def on_application_command_completion(ctx) -> None:
             joined_recently = datetime.now(timezone.utc) - member.joined_at < timedelta(hours=24)
             if joined_recently:
                 continue
-            if not any(name.lower() == member.nick.lower() for name in warframe_players):
+            if not any(name.casefold() == member.nick.casefold() for name in warframe_players):
                 continue
             try:
                 await member.remove_roles(guild.get_role(verified_role.verified_role_id))

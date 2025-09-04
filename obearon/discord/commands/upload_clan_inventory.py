@@ -51,9 +51,6 @@ class UploadClanInventory(commands.Cog):
             "\ue002": "playstation",
             "\ue003": "nintendo",
             "\ue004": "ios",
-            "\ue005": "unk005",
-            "\ue006": "unk006",
-            "\ue007": "unk007",
         }
         if not file.filename.lower().endswith(".json"):
             await ctx.respond("Can only accept '.JSON' files.", ephemeral=True)
@@ -70,10 +67,13 @@ class UploadClanInventory(commands.Cog):
                     if match:
                         player_name = match.group(1)
                         platform_code = match.group(2)
-                        platform = platform_dict.get(platform_code, "unknown")
+                        platform = platform_dict.get(platform_code)
+                        if not platform:
+                            logger.error(f"{player_name} have an unknown platform code: {platform_code}")
+                            raise ValueError(f"{player_name} have an unknown platform code: {platform_code}")
                     else:
-                        player_name = name
-                        platform = "unknown"
+                        logger.error(f"Failed to parse platform for name: {name}")
+                        raise KeyError(f"Failed to parse platform for name: {name}")
                     player_dict = {"oid": member["_id"]["$oid"], "name": player_name, "platform": platform}
                     player_name_list.append(player_dict)
             for member in parsed_json["Members"]:

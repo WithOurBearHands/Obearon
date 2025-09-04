@@ -18,8 +18,8 @@ class WarframePlayerNames(Base):
     """
 
     __tablename__ = "warframe_player_names"
-    __table_args__ = (UniqueConstraint("oid", "name", "platform"),)
+    __table_args__ = (UniqueConstraint("oid", "name", "platform", name="uq_oid_name_platform"),)
     id: Mapped[int] = mapped_column(Integer, primary_key=True, unique=True, autoincrement=True, nullable=False)
     oid: Mapped[str] = mapped_column(String, ForeignKey("warframe_players.oid"), nullable=False)
     name: Mapped[str] = mapped_column(String, nullable=False)
-    platform: Mapped[str] = mapped_column(String, nullable=False, default="unknown")
+    platform: Mapped[str] = mapped_column(String, nullable=False)
