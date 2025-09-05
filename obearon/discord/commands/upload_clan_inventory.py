@@ -5,7 +5,6 @@ Upload clan inventory command.
 from http.client import HTTPException
 import json
 from json import JSONDecodeError
-import re
 
 import discord
 from discord.commands import default_permissions
@@ -57,35 +56,32 @@ class UploadClanInventory(commands.Cog):
             return
         try:
             file_content = await file.read()
-            bytes_to_string = file_content.decode("utf-8")
-            parsed_json = json.loads(bytes_to_string)
+            parsed_json = json.loads(file_content)
             for member in parsed_json["Members"]:
                 all_names = [member["DisplayName"]]
                 all_names.extend(member.get("PlatformNames", []))
                 for name in all_names:
-                    match = re.match(r"(.*?)([\ue000-\uefff])$", name)
-                    if match:
-                        player_name = match.group(1)
-                        platform_code = match.group(2)
-                        platform = platform_dict.get(platform_code)
-                        if not platform:
-                            logger.error(f"{player_name} have an unknown platform code: {platform_code}")
-                            raise ValueError(f"{player_name} have an unknown platform code: {platform_code}")
+                    player_name = name[:-1]
+                    if 0xE000 <= ord(name[-1]) <= 0xF8FF:
+                        platform = platform_dict.get(name[-1])
+                        if platform is None:
+                            logger.error(f"{player_name} have an unknown platform code: {hex(ord(name[-1]))}")
+                            raise ValueError
                     else:
-                        logger.error(f"Failed to parse platform for name: {name}")
-                        raise KeyError(f"Failed to parse platform for name: {name}")
+                        platform = "pc"
+
                     player_dict = {"oid": member["_id"]["$oid"], "name": player_name, "platform": platform}
                     player_name_list.append(player_dict)
             for member in parsed_json["Members"]:
                 player_dict = {"oid": member["_id"]["$oid"], "mastery_rank": member.get("PlayerLevel", "0")}
                 player_list.append(player_dict)
-        except (discord.NotFound, HTTPException, JSONDecodeError) as exception:
+        except (discord.NotFound, HTTPException, JSONDecodeError, ValueError) as exception:
             logger.info(f"Failed to parse file.\n {exception}")
             await ctx.respond("Data upload failed!", ephemeral=True)
             return
         try:
             await crud.create_update_warframe_players(player_list, player_name_list)
-            logger.info("warframe_players and warframe_player_names table updated.")
+            logger.info("New clan inventory data added uploaded.")
             await ctx.respond("Data upload complete!", ephemeral=True)
 
         except SQLAlchemyError as ex:

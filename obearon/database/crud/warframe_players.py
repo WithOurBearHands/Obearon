@@ -2,7 +2,6 @@
 CRUD operations for the warframe_player table.
 """
 
-from loguru import logger
 from sqlalchemy import select
 from sqlalchemy import update
 from sqlalchemy.dialects.postgresql import insert
@@ -19,7 +18,6 @@ async def create_update_warframe_players(players: list[dict], player_names: list
         players: list of dicts, contains oid, mastery_rank
         player_names: list of dicts, contains oid, name, platform
     """
-    player_oids = [player["oid"] for player in players]
 
     async with engine.async_session() as session, session.begin():
         out_of_clan = update(models.WarframePlayers).values(in_clan=False)
@@ -43,7 +41,6 @@ async def create_update_warframe_players(players: list[dict], player_names: list
             await session.execute(name_insert)
 
         await session.commit()
-    logger.info("Updated warframe_players table.")
 
 
 async def get_warframe_players() -> list[models.WarframePlayers]:
